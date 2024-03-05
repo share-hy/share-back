@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.share.hy.mapper.ShareBenefitConfigMapper">
+  <resultMap id="BaseResultMap" type="com.share.hy.domain.ShareBenefitConfig">
+    <!-- WARNING - @mbg.generated -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="goods_item_id" jdbcType="VARCHAR" property="goodsItemId" />
+    <result column="level" jdbcType="TINYINT" property="level" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  
+  <sql id="BaseColumns">
+    <!-- WARNING - @mbg.generated -->
+    id, goods_item_id, level, amount, create_time, update_time
+  </sql>
+  
+</mapper>

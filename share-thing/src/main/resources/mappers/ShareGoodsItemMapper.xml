@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.share.hy.mapper.ShareGoodsItemMapper">
+  <resultMap id="BaseResultMap" type="com.share.hy.domain.ShareGoodsItem">
+    <!-- WARNING - @mbg.generated -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="goods_item_id" jdbcType="VARCHAR" property="goodsItemId" />
+    <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
+    <result column="raw_price" jdbcType="DECIMAL" property="rawPrice" />
+    <result column="currency" jdbcType="VARCHAR" property="currency" />
+    <result column="duration" jdbcType="INTEGER" property="duration" />
+    <result column="enabled" jdbcType="BIT" property="enabled" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+  </resultMap>
+  
+  <sql id="BaseColumns">
+    <!-- WARNING - @mbg.generated -->
+    id, goods_item_id, goods_id, raw_price, currency, duration, enabled, sort, remark, update_time, create_time, update_by, create_by
+  </sql>
+  
+</mapper>

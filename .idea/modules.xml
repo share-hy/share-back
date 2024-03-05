@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/share-back.iml" filepath="$PROJECT_DIR$/.idea/share-back.iml" />
+      <module fileurl="file://$PROJECT_DIR$/share-gateway/share-gateway.iml" filepath="$PROJECT_DIR$/share-gateway/share-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/share-thing/share-thing.iml" filepath="$PROJECT_DIR$/share-thing/share-thing.iml" />
+    </modules>
+  </component>
+</project>
