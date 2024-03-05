@@ -1,6 +1,7 @@
 package com.share.hy.common.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.share.hy.common.HttpCommonHeader;
 import com.share.hy.common.RequestIdHelper;
 import com.share.hy.common.ResponseMsg;
 import com.share.hy.common.enums.ErrorCodeEnum;
@@ -115,24 +116,6 @@ public class BaseController {
         return responseMsg;
     }
 
-
-    protected ResponseMsg getResultOfResultCouldBeNull(ErrorCodeEnum errorCodeEnumCommon, Object result) {
-        ResponseMsg responseMsg = new ResponseMsg();
-        responseMsg.setRequestId(RequestIdHelper.getRequestId());
-        responseMsg.setCode(errorCodeEnumCommon.getCode());
-        responseMsg.setMessage(errorCodeEnumCommon.getDesc());
-        responseMsg.setResult(result);
-
-        HttpServletRequest request = getRequest();
-        // 为了简化日志查询,POST请求才打印详细返回日志 Get只打印code
-        if (request.getMethod().equalsIgnoreCase(RequestMethod.POST.name())) {
-            log.info("--ResponseMsg--:{}", JSON.toJSONString(responseMsg));
-        } else {
-            log.info("--ResponseMsg--:code:{}", responseMsg.getCode());
-        }
-
-        return responseMsg;
-    }
     protected static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
@@ -142,8 +125,9 @@ public class BaseController {
         return getResult(errorCodeEnumCommon, "");
     }
 
-    protected ResponseMsg getNullResult(ErrorCodeEnum errorCodeEnum) {
-        return getResultOfResultCouldBeNull(errorCodeEnum, null);
+    protected static HttpCommonHeader getHttpCommonHeader(){
+        HttpServletRequest request = getRequest();
+        return new HttpCommonHeader(request);
     }
 
 

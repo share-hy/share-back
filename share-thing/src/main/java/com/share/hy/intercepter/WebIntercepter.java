@@ -1,4 +1,8 @@
 package com.share.hy.intercepter;
+import com.share.hy.common.HttpCommonHeader;
+import com.share.hy.common.constants.CookieConstant;
+import com.share.hy.common.controller.BaseController;
+import com.share.hy.common.enums.ErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -13,16 +17,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @Slf4j
-public class WebIntercepter extends BaseOpenController {
-
-    @Autowired
-    private DeveloperService developerService;
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-    @Value("${temp.server:30}")
-    private Byte tempServer;
-    @Autowired
-    private RedisLockService redisLockService;
+public class WebIntercepter extends BaseController {
     /**
      * 控制台访问流量限制
      */
@@ -48,14 +43,14 @@ public class WebIntercepter extends BaseOpenController {
 
     @Around("")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
-        HttpCommomHeader httpCommomHeader = getHttpCommomHeader();
-        String token = httpCommomHeader.getToken();
+        HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
+        String token = httpCommonHeader.getToken();
         if (StringUtils.isBlank(token)) {
             // 如果从header中读取不到,则从cookie中进行获取试试
             token = CookieConstant.getCookieValue(CookieConstant.TOKEN_COOKIE_NAME);
             log.info("get token from cookie token:{}", token);
             if (StringUtils.isBlank(token)) {
-                return failed(ErrorCodeUtils.CommonErrorCode.ERROR_TOKEN_IS_ABSENCE);
+                return failed(ErrorCodeEnum.ERROR_TOKEN_IS_ABSENCE);
             }
         }
         String userId = stringRedisTemplate.opsForValue().get(App3rdRedisKeyConstant.getUserRedisKey(token));
