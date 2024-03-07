@@ -19,16 +19,18 @@
     <spring-boot-maven-plugin.version>2.3.0.RELEASE</spring-boot-maven-plugin.version>
 
     <!--3rd lib dependency-->
-    <lombok.version>1.18.12</lombok.version>
+    <lombok.version>1.18.20</lombok.version>
     <hutool.version>5.3.9</hutool.version>
     <mysql-connector.version>8.0.13</mysql-connector.version>
     <fastjson.version>1.2.68</fastjson.version>
     <hibernate.validator.version>6.0.10.Final</hibernate.validator.version>
     <commons-io.version>2.6</commons-io.version>
     <guava.version>23.0</guava.version>
+    <druid.version>1.2.14</druid.version>
     <tk-mybatis.version>2.1.5</tk-mybatis.version>
     <commons-lang3.version>3.7</commons-lang3.version>
     <commons-collections4.version>4.4</commons-collections4.version>
+    <sharding-sphere.version>4.0.0-RC2-SNAPSHOT</sharding-sphere.version>
   </properties>
 
   <dependencies>
@@ -67,6 +69,11 @@
       <version>${fastjson.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid</artifactId>
+      <version>${druid.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>${hibernate.validator.version}</version>
@@ -103,6 +110,11 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+      <version>${spring-boot-dependencies.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
       <version>${spring-boot-dependencies.version}</version>
     </dependency>
@@ -112,6 +124,27 @@
       <version>${spring-boot-dependencies.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-cache</artifactId>
+      <version>${spring-boot-dependencies.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+      <version>${spring-boot-dependencies.version}</version>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.apache.shardingsphere</groupId>-->
+<!--      <artifactId>sharding-jdbc-spring-boot-starter</artifactId>-->
+<!--      <version>${sharding-sphere.version}</version>-->
+<!--    </dependency>-->
+
+<!--    <dependency>-->
+<!--      <groupId>org.apache.shardingsphere</groupId>-->
+<!--      <artifactId>sharding-jdbc-spring-namespace</artifactId>-->
+<!--      <version>${sharding-sphere.version}</version>-->
+<!--    </dependency>-->
   </dependencies>
 
   <build>

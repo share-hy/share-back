@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: share-thing
+  profiles:
+    active: dev #默认为开发环境
+
+mybatis:
+  mapper-locations:
+    classpath*:mappers/**/*.xml

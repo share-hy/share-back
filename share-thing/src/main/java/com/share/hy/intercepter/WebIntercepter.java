@@ -9,7 +9,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -55,28 +54,28 @@ public class WebIntercepter extends BaseController {
         }
         String userId = stringRedisTemplate.opsForValue().get(App3rdRedisKeyConstant.getUserRedisKey(token));
         if (StringUtils.isBlank(userId)) {
-            return failed(ErrorCodeUtils.CommonErrorCode.ERROR_TOKEN_IS_EXPRIED);
+            return failed(ErrorCodeEnum.ERROR_TOKEN_IS_EXPIRED);
         }
         //记录同个userId，短时间内只能访问一定的次数
         boolean limit = redisLockService.counterLimit(App3rdRedisKeyConstant.getConsoleLimitKey(userId), consoleTimeRange, consoleLimitTimes);
         if (limit){
             log.warn("the developer request too many times:{}",userId);
-            return failed(ErrorCodeUtils.CommonErrorCode.ERROR_REQUEST_FLOW_LIMIT);
+            return failed(ErrorCodeEnum.ERROR_REQUEST_FLOW_LIMIT);
         }
-        String headerUserId = httpCommomHeader.getUserid();
+        String headerUserId = httpCommonHeader.getUserId();
         if (!StringUtils.equals(userId,headerUserId)) {
-            return failed(ErrorCodeUtils.CommonErrorCode.ERROR_TOKEN_IS_ABSENCE);
+            return failed(ErrorCodeEnum.ERROR_TOKEN_IS_ABSENCE);
         }
         return pjp.proceed();
     }
 
-    @Around("execution(* com.lumi.aiot.cloud.open.controller.manage..*(..))")
+    @Around("execution(* com.share.hy.controller.admin..*(..))")
     public Object aroundAdmin(ProceedingJoinPoint pjp) throws Throwable {
-        String userId = getHttpCommomHeader().getUserid();
-        String lang = getHttpCommomHeader().getLang();
+        String userId = getHttpCommonHeader().getUserId();
+        String lang = getHttpCommonHeader().getLang();
         IotApp3rdDeveloper developer = developerService.getDeveloperInfo(userId);
         if (developer == null || developer.getState() == GRANTED_NO || developer.getRole() != 1) {
-            return failed(AbstractOpenCloudErrorUtil.ErrorCodeEnum.ERROR_PERMISSION_DENIED, lang);
+            return failed(ErrorCodeEnum.ERROR_PERMISSION_DENIED);
         }
 
         return pjp.proceed();
