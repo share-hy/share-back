@@ -8,4 +8,6 @@ public interface IUserService {
     UserAuthDTO userLogin(UserLoginDTO userLoginDTO);
 
     ErrorCodeEnum register(UserLoginDTO userRegister);
+
+    void logout(String userId);
 }

@@ -3,7 +3,6 @@ package com.share.hy.service.impl;
 import com.share.hy.common.constants.CookieConstant;
 import com.share.hy.common.constants.UserConstant;
 import com.share.hy.common.enums.ErrorCodeEnum;
-import com.share.hy.common.enums.RoleEnum;
 import com.share.hy.domain.ShareUser;
 import com.share.hy.dto.user.UserAuthDTO;
 import com.share.hy.dto.user.UserLoginDTO;
@@ -11,7 +10,6 @@ import com.share.hy.manager.IUserManager;
 import com.share.hy.service.IUserService;
 import com.share.hy.utils.SpringRequestHolderUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -59,6 +57,11 @@ public class UserServiceImpl implements IUserService {
         shareUser.setUserId(userId);
         userManager.newAddUser(shareUser);
         return ErrorCodeEnum.SUCCESS;
+    }
+
+    @Override
+    public void logout(String userId) {
+
     }
 
     private void setCookie(String token,String userId){
