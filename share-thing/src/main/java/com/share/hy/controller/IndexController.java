@@ -3,7 +3,7 @@ package com.share.hy.controller;
 import com.share.hy.common.ResponseMsg;
 import com.share.hy.common.controller.BaseController;
 import com.share.hy.domain.ShareIndexConfig;
-import com.share.hy.dto.user.IndexInfoDTO;
+import com.share.hy.dto.IndexInfoDTO;
 import com.share.hy.manager.IndexManager;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -18,23 +18,23 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/share/user")
+@RequestMapping("/v1/share/")
 public class UserController extends BaseController {
 
     @Autowired
     private IUserService userService;
 
-    @PostMapping("/login")
+    @PostMapping("user/login")
     public ResponseMsg<?> login(@RequestBody @Valid UserLoginDTO userLoginDTO){
         return success(userService.userLogin(userLoginDTO));
     }
 
-    @PostMapping("/register")
+    @PostMapping("user/register")
     public ResponseMsg<?> register(@RequestBody @Valid UserLoginDTO userRegister){
         return success(userService.register(userRegister));
     }
 
-    @GetMapping("/logout")
+    @GetMapping("user/logout")
     public ResponseMsg<?> logout(){
         HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
         return success(userService.logout(httpCommonHeader.getUserId()));
