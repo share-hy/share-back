@@ -191,7 +191,17 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <resources>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                  <source>8</source>
+                  <target>8</target>
+              </configuration>
+          </plugin>
+      </plugins>
+      <resources>
       <resource>
         <!-- 指定resources插件处理哪个目录下的资源文件 -->
         <directory>src/main/webapp</directory>

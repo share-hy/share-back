@@ -38,7 +38,7 @@ public class UserServiceImpl implements IUserService {
         String token = generateToken();
         setCookie(token, userId);
         userManager.saveToken(token,userId);
-        return new UserAuthDTO(userId,token);
+        return new UserAuthDTO(userId,token,shareUser.getRole());
     }
 
     @Override
@@ -61,6 +61,11 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void logout(String userId) {
+
+    }
+
+    @Override
+    public Object accountInfo(String userId) {
 
     }
 

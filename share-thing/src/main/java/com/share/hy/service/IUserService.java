@@ -10,4 +10,6 @@ public interface IUserService {
     ErrorCodeEnum register(UserLoginDTO userRegister);
 
     void logout(String userId);
+
+    Object accountInfo(String userId);
 }

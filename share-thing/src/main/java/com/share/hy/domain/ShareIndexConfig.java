@@ -1,6 +1,5 @@
 package com.share.hy.domain;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
@@ -21,7 +20,7 @@ public class ShareIndexConfig implements Serializable {
     private Integer id;
 
     /**
-     * 0-图片,1-视频
+     * 0-图片,1-视频 2-客户端地址
      */
     @Column(name = "type")
     private Byte type;
@@ -63,18 +62,4 @@ public class ShareIndexConfig implements Serializable {
     private String link;
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).omitNullValues()
-                .add("id", id)
-                .add("type", type)
-                .add("desc", desc)
-                .add("sort", sort)
-                .add("enable", enable)
-                .add("createTime", createTime)
-                .add("updateTime", updateTime)
-                .add("link", link)
-                .toString();
-    }
 }

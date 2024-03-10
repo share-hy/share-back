@@ -14,6 +14,7 @@ public enum ErrorCodeEnum {
     ERROR_REQUEST_FLOW_LIMIT(104,"操作频繁","操作频繁"),
     ERROR_PERMISSION_DENIED(105,"权限不够","无权限操作"),
     ERROR_ACCOUNT_HAS_REGISTERED(106,"账号已注册","账号已被注册，请更换"),
+    ERROR_PARAM_WRONG(107,"参数异常","请求参数异常，请检查"),
     ;
 
     private final int code;

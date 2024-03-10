@@ -11,4 +11,5 @@ public class UserAuthDTO {
 
     private String userId;
     private String token;
+    private Byte r;
 }
