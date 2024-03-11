@@ -37,10 +37,11 @@ public class UserController extends BaseController {
     @GetMapping("user/logout")
     public ResponseMsg<?> logout(){
         HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
-        return success(userService.logout(httpCommonHeader.getUserId()));
+        userService.logout(httpCommonHeader.getUserId());
+        return success();
     }
 
-    @GetMapping("/info")
+    @GetMapping("account/info")
     public ResponseMsg<?> info(){
         HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
         String userId = httpCommonHeader.getUserId();
