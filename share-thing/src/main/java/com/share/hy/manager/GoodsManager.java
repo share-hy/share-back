@@ -1,6 +1,10 @@
 package com.share.hy.manager;
 
+import com.share.hy.dto.goods.GoodsDTO;
+
+import java.util.List;
+
 public interface GoodsManager {
 
-    queryGoods();
+    List<GoodsDTO> queryGoods(String userId);
 }

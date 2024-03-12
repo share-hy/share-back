@@ -17,5 +17,7 @@ public class GoodsDTO {
 
     private Integer day;
 
+    private Byte status;
+
     private Byte duration;
 }
