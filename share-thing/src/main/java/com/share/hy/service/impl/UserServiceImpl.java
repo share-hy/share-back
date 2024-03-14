@@ -66,7 +66,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Object accountInfo(String userId) {
-
+        return null;
     }
 
     private void setCookie(String token,String userId){

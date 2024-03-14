@@ -1,6 +1,5 @@
 package com.share.hy.domain;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -49,18 +48,4 @@ public class ShareUserTradeRecord implements Serializable {
     private Date createTime;
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).omitNullValues()
-                .add("id", id)
-                .add("orderId", orderId)
-                .add("tradeId", tradeId)
-                .add("tradePlat", tradePlat)
-                .add("currency", currency)
-                .add("amount", amount)
-                .add("type", type)
-                .add("createTime", createTime)
-                .toString();
-    }
 }

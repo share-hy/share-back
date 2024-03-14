@@ -11,11 +11,11 @@ public class VipController {
 
     @PostMapping("vip/query")
     public ResponseMsg<?> vipConfigQuery(){
-
+        return null;
     }
 
     @PostMapping("vip/config")
-    public ResponseMsg<?> vipConfigQuery(){
-
+    public ResponseMsg<?> vipConfig(){
+        return null;
     }
 }

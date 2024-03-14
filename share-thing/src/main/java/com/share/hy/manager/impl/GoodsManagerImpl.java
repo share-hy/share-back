@@ -1,5 +1,6 @@
 package com.share.hy.manager.impl;
 
+import com.share.hy.common.enums.DurationEnum;
 import com.share.hy.domain.ShareGoods;
 import com.share.hy.domain.ShareGoodsItem;
 import com.share.hy.dto.goods.GoodsDTO;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,7 +28,7 @@ public class GoodsManagerImpl implements GoodsManager {
     @Autowired
     private ShareGoodsItemMapper shareGoodsItemMapper;
 
-    private static Map<Byte,List<GoodsDTO>> ONLINE_GOODS = null;
+    private static Map<Byte,List<GoodsDTO>> ONLINE_GOODS = new HashMap<>();
 
     @PostConstruct
     @Override
@@ -37,11 +40,24 @@ public class GoodsManagerImpl implements GoodsManager {
             return;
         }
         Map<String, ShareGoods> goodsMap = shareGoods.stream().collect(Collectors.toMap(ShareGoods::getGoodsId, k -> k));
-        shareGoodsItems.forEach();
+        shareGoodsItems.forEach(goodItem ->{
+            ShareGoods goods = goodsMap.get(goodItem.getGoodsId());
+            GoodsDTO goodsDTO = new GoodsDTO();
+            goodsDTO.setName(goods.getGoodsName());
+            goodsDTO.setDesc(goodsDTO.getDesc());
+            goodsDTO.setGoodsItemId(goodItem.getGoodsItemId());
+            goodsDTO.setDuration(goodItem.getDuration());
+            goodsDTO.setDay(DurationEnum.getDayByDuration(goodItem.getDuration()));
+            ONLINE_GOODS.computeIfAbsent(goods.getType(),k->new LinkedList<>()).add(goodsDTO);
+        });
     }
 
+    /**
+     * 默认返回VPN商品-0
+     * @return
+     */
     @Override
     public List<GoodsDTO> queryGoods() {
-
+        return ONLINE_GOODS.get((byte)0);
     }
 }

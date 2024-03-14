@@ -1,6 +1,5 @@
 package com.share.hy.domain;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -40,7 +39,7 @@ public class ShareGoodsItem implements Serializable {
      * 0-包月(31天) 1-包季度(92天) 2-包年(366天)
      */
     @Column(name = "duration")
-    private Integer duration;
+    private Byte duration;
 
     /**
      * 是否启用该服务子项
@@ -85,23 +84,4 @@ public class ShareGoodsItem implements Serializable {
     private String createBy;
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).omitNullValues()
-                .add("id", id)
-                .add("goodsItemId", goodsItemId)
-                .add("goodsId", goodsId)
-                .add("rawPrice", rawPrice)
-                .add("currency", currency)
-                .add("duration", duration)
-                .add("enabled", enabled)
-                .add("sort", sort)
-                .add("remark", remark)
-                .add("updateTime", updateTime)
-                .add("createTime", createTime)
-                .add("updateBy", updateBy)
-                .add("createBy", createBy)
-                .toString();
-    }
 }

@@ -1,7 +1,6 @@
 package com.share.hy.manager;
 
 import com.share.hy.domain.ShareIndexConfig;
-import com.share.hy.dto.user.IndexInfoDTO;
 
 import java.util.List;
 

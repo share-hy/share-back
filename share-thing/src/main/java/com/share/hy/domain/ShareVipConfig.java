@@ -1,6 +1,5 @@
 package com.share.hy.domain;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
@@ -52,15 +51,4 @@ public class ShareVipConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).omitNullValues()
-                .add("id", id)
-                .add("level", level)
-                .add("quantity", quantity)
-                .add("benefit", benefit)
-                .add("createTime", createTime)
-                .add("updateTime", updateTime)
-                .toString();
-    }
 }

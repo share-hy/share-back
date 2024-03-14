@@ -1,6 +1,5 @@
 package com.share.hy.domain;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
@@ -102,25 +101,4 @@ public class ShareGoods implements Serializable {
     private String createBy;
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).omitNullValues()
-                .add("id", id)
-                .add("goodsId", goodsId)
-                .add("goodsName", goodsName)
-                .add("type", type)
-                .add("title", title)
-                .add("description", description)
-                .add("rollingLength", rollingLength)
-                .add("sort", sort)
-                .add("enabled", enabled)
-                .add("version", version)
-                .add("remark", remark)
-                .add("updateTime", updateTime)
-                .add("createTime", createTime)
-                .add("updateBy", updateBy)
-                .add("createBy", createBy)
-                .toString();
-    }
 }

@@ -1,6 +1,5 @@
 package com.share.hy.domain;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -123,27 +122,4 @@ public class ShareOrder implements Serializable {
     private Date latestUpdateTime;
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).omitNullValues()
-                .add("id", id)
-                .add("orderId", orderId)
-                .add("status", status)
-                .add("paymentAmount", paymentAmount)
-                .add("payTime", payTime)
-                .add("userId", userId)
-                .add("goodsId", goodsId)
-                .add("tradeId", tradeId)
-                .add("tradePlat", tradePlat)
-                .add("currency", currency)
-                .add("createTime", createTime)
-                .add("cause", cause)
-                .add("remark", remark)
-                .add("refundTime", refundTime)
-                .add("refundCurrency", refundCurrency)
-                .add("refundAmount", refundAmount)
-                .add("latestUpdateTime", latestUpdateTime)
-                .toString();
-    }
 }

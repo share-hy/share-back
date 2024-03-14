@@ -17,7 +17,7 @@ public class IGoodsServiceImpl implements IGoodsService {
 
     @Override
     public Map<String, List<GoodsDTO>> queryByUserId(String userId) {
-        goodsManager.queryGoods();
+        List<GoodsDTO> goodsDTOS = goodsManager.queryGoods();
         return null;
     }
 }
