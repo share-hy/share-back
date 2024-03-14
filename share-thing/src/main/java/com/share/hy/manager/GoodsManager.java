@@ -6,5 +6,8 @@ import java.util.List;
 
 public interface GoodsManager {
 
-    List<GoodsDTO> queryGoods(String userId);
+    void init();
+
+    List<GoodsDTO> queryGoods();
+
 }

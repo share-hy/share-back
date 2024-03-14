@@ -21,7 +21,7 @@ public class GoodsController extends BaseController {
     @GetMapping("query")
     public ResponseMsg<?> goodsQuery(){
         HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
-        return success(goodsService.query(httpCommonHeader.getUserId()));
+        return success(goodsService.queryByUserId(httpCommonHeader.getUserId()));
     }
 
 }
