@@ -1,5 +1,6 @@
 package com.share.hy.service.impl;
 
+import com.share.hy.domain.ShareServiceRecord;
 import com.share.hy.dto.goods.GoodsDTO;
 import com.share.hy.manager.GoodsManager;
 import com.share.hy.service.IGoodsService;
@@ -18,6 +19,8 @@ public class IGoodsServiceImpl implements IGoodsService {
     @Override
     public Map<String, List<GoodsDTO>> queryByUserId(String userId) {
         List<GoodsDTO> goodsDTOS = goodsManager.queryGoods();
+        List<ShareServiceRecord> serviceRecordList = goodsManager.queryServiceRecordByUserId(userId);
+
         return null;
     }
 }

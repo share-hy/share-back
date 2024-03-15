@@ -3,14 +3,17 @@ package com.share.hy.manager.impl;
 import com.share.hy.common.enums.DurationEnum;
 import com.share.hy.domain.ShareGoods;
 import com.share.hy.domain.ShareGoodsItem;
+import com.share.hy.domain.ShareServiceRecord;
 import com.share.hy.dto.goods.GoodsDTO;
 import com.share.hy.manager.GoodsManager;
 import com.share.hy.mapper.ShareGoodsItemMapper;
 import com.share.hy.mapper.ShareGoodsMapper;
+import com.share.hy.mapper.ShareServiceRecordMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -27,6 +30,8 @@ public class GoodsManagerImpl implements GoodsManager {
     private ShareGoodsMapper shareGoodsMapper;
     @Autowired
     private ShareGoodsItemMapper shareGoodsItemMapper;
+    @Autowired
+    private ShareServiceRecordMapper shareServiceRecordMapper;
 
     private static Map<Byte,List<GoodsDTO>> ONLINE_GOODS = new HashMap<>();
 
@@ -59,5 +64,12 @@ public class GoodsManagerImpl implements GoodsManager {
     @Override
     public List<GoodsDTO> queryGoods() {
         return ONLINE_GOODS.get((byte)0);
+    }
+
+    @Override
+    public List<ShareServiceRecord> queryServiceRecordByUserId(String userId) {
+        Example example = new Example(ShareServiceRecord.class);
+        example.createCriteria().andEqualTo("userId",userId);
+        return shareServiceRecordMapper.selectByExample(example);
     }
 }

@@ -1,6 +1,7 @@
 package com.share.hy.service;
 
 import com.share.hy.common.enums.ErrorCodeEnum;
+import com.share.hy.dto.console.AccountInfo;
 import com.share.hy.dto.user.UserAuthDTO;
 import com.share.hy.dto.user.UserLoginDTO;
 
@@ -9,7 +10,5 @@ public interface IUserService {
 
     ErrorCodeEnum register(UserLoginDTO userRegister);
 
-    void logout(String userId);
-
-    Object accountInfo(String userId);
+    AccountInfo accountInfo(String userId);
 }

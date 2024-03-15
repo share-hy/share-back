@@ -59,6 +59,12 @@ public class ShareGoods implements Serializable {
     private Integer sort;
 
     /**
+     * 商品等级
+     */
+    @Column(name = "level")
+    private Byte level;
+
+    /**
      * 是否上线该服务
      */
     @Column(name = "enabled")

@@ -2,6 +2,8 @@ package com.share.hy.controller.user;
 
 import com.share.hy.common.HttpCommonHeader;
 import com.share.hy.common.ResponseMsg;
+import com.share.hy.common.constants.CookieConstant;
+import com.share.hy.common.constants.RedisKeyConstant;
 import com.share.hy.common.controller.BaseController;
 import com.share.hy.common.enums.ErrorCodeEnum;
 import com.share.hy.dto.user.UserAuthDTO;
@@ -11,6 +13,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,6 +27,9 @@ public class UserController extends BaseController {
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
     @PostMapping("user/login")
     public ResponseMsg<?> login(@RequestBody @Valid UserLoginDTO userLoginDTO){
         return success(userService.userLogin(userLoginDTO));
@@ -36,8 +42,11 @@ public class UserController extends BaseController {
 
     @GetMapping("user/logout")
     public ResponseMsg<?> logout(){
-        HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
-        userService.logout(httpCommonHeader.getUserId());
+        String token = CookieConstant.getCookieValue(CookieConstant.TOKEN_COOKIE_NAME);
+        String userId = CookieConstant.getCookieValue(CookieConstant.COOKIE_USER_ID);
+        stringRedisTemplate.delete(RedisKeyConstant.getUserTokenKey(token));
+        log.info("userId logout:{},token:{}",userId,token);
+
         return success();
     }
 

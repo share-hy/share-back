@@ -4,6 +4,7 @@ import com.share.hy.common.constants.CookieConstant;
 import com.share.hy.common.constants.UserConstant;
 import com.share.hy.common.enums.ErrorCodeEnum;
 import com.share.hy.domain.ShareUser;
+import com.share.hy.dto.console.AccountInfo;
 import com.share.hy.dto.user.UserAuthDTO;
 import com.share.hy.dto.user.UserLoginDTO;
 import com.share.hy.manager.IUserManager;
@@ -59,13 +60,9 @@ public class UserServiceImpl implements IUserService {
         return ErrorCodeEnum.SUCCESS;
     }
 
-    @Override
-    public void logout(String userId) {
-
-    }
 
     @Override
-    public Object accountInfo(String userId) {
+    public AccountInfo accountInfo(String userId) {
         return null;
     }
 
