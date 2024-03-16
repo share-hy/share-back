@@ -14,8 +14,6 @@ public class UserLoginDTO implements Serializable {
 	private static final long serialVersionUID = -12318872209795986L;
 
 	@NotEmpty(message = "account can not null")
-	@Min(value = 6,message = "账号至少6位")
-	@Max(value = 20,message = "账号最长20位")
 	private String userName;
 
 	/**

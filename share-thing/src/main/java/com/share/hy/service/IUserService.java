@@ -8,7 +8,7 @@ import com.share.hy.dto.user.UserLoginDTO;
 public interface IUserService {
     UserAuthDTO userLogin(UserLoginDTO userLoginDTO);
 
-    ErrorCodeEnum register(UserLoginDTO userRegister);
+    ErrorCodeEnum register(UserLoginDTO userRegister) throws Exception;
 
     AccountInfo accountInfo(String userId);
 }

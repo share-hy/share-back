@@ -56,6 +56,12 @@ public class ShareUser implements Serializable {
     private String userId;
 
     /**
+     * 0-禁用 1-正常
+     */
+    @Column(name = "state")
+    private Byte state;
+
+    /**
      * 0-普通用户 1-管理员
      */
     @Column(name = "role")

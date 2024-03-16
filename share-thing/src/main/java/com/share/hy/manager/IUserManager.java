@@ -11,4 +11,6 @@ public interface IUserManager {
     void saveToken(String token,String userId);
 
     void newAddUser(ShareUser shareUser);
+
+    ShareUser getAdminUser(String userId);
 }

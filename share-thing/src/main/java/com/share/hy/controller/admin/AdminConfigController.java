@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/share/admin/")
-public class VipController {
+public class AdminConfigController {
 
-    @PostMapping("vip/query")
+    @PostMapping("vip/config/query")
     public ResponseMsg<?> vipConfigQuery(){
         return null;
     }
@@ -18,4 +18,16 @@ public class VipController {
     public ResponseMsg<?> vipConfig(){
         return null;
     }
+
+    @PostMapping("benefit/config")
+    public ResponseMsg<?> benefitConfig(){
+        return null;
+    }
+
+    @PostMapping("benefit/config/query")
+    public ResponseMsg<?> benefitConfigQuery(){
+        return null;
+    }
+
+
 }

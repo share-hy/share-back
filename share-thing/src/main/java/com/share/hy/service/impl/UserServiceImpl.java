@@ -9,6 +9,7 @@ import com.share.hy.dto.user.UserAuthDTO;
 import com.share.hy.dto.user.UserLoginDTO;
 import com.share.hy.manager.IUserManager;
 import com.share.hy.service.IUserService;
+import com.share.hy.utils.Md5Util;
 import com.share.hy.utils.SpringRequestHolderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +44,13 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ErrorCodeEnum register(UserLoginDTO userRegister) {
+    public ErrorCodeEnum register(UserLoginDTO userRegister) throws Exception {
         int count = userManager.countByUserName(userRegister.getUserName());
         if (count > 0){
             return ErrorCodeEnum.ERROR_ACCOUNT_HAS_REGISTERED;
         }
         ShareUser shareUser = new ShareUser();
-        shareUser.setPassword(userRegister.getPassword());
+        shareUser.setPassword(Md5Util.MD5With32(userRegister.getPassword()));
         shareUser.setUserName(userRegister.getUserName());
         String userId = UserConstant.generateUserId();
         String token = generateToken();

@@ -1,6 +1,7 @@
 package com.share.hy.manager.impl;
 
 import com.share.hy.common.constants.RedisKeyConstant;
+import com.share.hy.common.enums.RoleEnum;
 import com.share.hy.domain.ShareUser;
 import com.share.hy.manager.IUserManager;
 import com.share.hy.mapper.ShareUserMapper;
@@ -48,5 +49,13 @@ public class UserManagerImpl implements IUserManager {
     @Override
     public void newAddUser(ShareUser shareUser) {
         shareUserMapper.insertSelective(shareUser);
+    }
+
+    @Override
+    public ShareUser getAdminUser(String userId) {
+        Example example = new Example(ShareUser.class);
+        example.createCriteria().andEqualTo("userId",userId)
+                .andEqualTo("role", RoleEnum.ADMIN.getCode());
+        return shareUserMapper.selectOneByExample(example);
     }
 }

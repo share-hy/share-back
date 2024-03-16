@@ -36,7 +36,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("user/register")
-    public ResponseMsg<?> register(@RequestBody @Valid UserLoginDTO userRegister){
+    public ResponseMsg<?> register(@RequestBody @Valid UserLoginDTO userRegister) throws Exception {
         return success(userService.register(userRegister));
     }
 
