@@ -12,8 +12,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <!-- spring lib dependency-->
     <spring-boot-dependencies.version>2.3.0.RELEASE</spring-boot-dependencies.version>
     <spring-boot-maven-plugin.version>2.3.0.RELEASE</spring-boot-maven-plugin.version>
@@ -21,6 +21,7 @@
     <!--3rd lib dependency-->
     <lombok.version>1.18.20</lombok.version>
     <hutool.version>5.3.9</hutool.version>
+    <docker.maven.plugin.version>0.40.2</docker.maven.plugin.version>
     <mysql-connector.version>8.0.13</mysql-connector.version>
     <fastjson.version>1.2.68</fastjson.version>
     <hibernate.validator.version>6.0.10.Final</hibernate.validator.version>
@@ -30,6 +31,7 @@
     <tk-mybatis.version>1.2.4</tk-mybatis.version>
     <commons-lang3.version>3.7</commons-lang3.version>
     <commons-collections4.version>4.4</commons-collections4.version>
+    <docker.host>http://8.134.146.201:22</docker.host>
   </properties>
 
   <dependencies>
@@ -179,78 +181,9 @@
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-      <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
-        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
-        <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-      <plugins>
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <configuration>
-                  <source>8</source>
-                  <target>8</target>
-              </configuration>
-          </plugin>
-      </plugins>
-      <resources>
-      <resource>
-        <!-- 指定resources插件处理哪个目录下的资源文件 -->
-        <directory>src/main/webapp</directory>
-        <!--注意此次必须要放在此目录下才能被访问到 -->
-        <targetPath>META-INF/resources</targetPath>
-        <includes>
-          <include>**/*.*</include>
-        </includes>
-      </resource>
-      <resource>
-        <!-- 指定resources插件处理哪个目录下的资源文件 -->
-        <directory>src/main/webapp</directory>
-        <!--注意此次必须要放在此目录下才能被访问到 -->
-        <targetPath>static</targetPath>
-        <includes>
-          <include>**/*.*</include>
-        </includes>
-      </resource>
+    <finalName>${project.artifactId}</finalName>
+    <defaultGoal>package</defaultGoal>
+    <resources>
       <resource>
         <directory>src/main/resources</directory>
       </resource>
@@ -271,6 +204,148 @@
           <include>**/*.properties</include>
         </includes>
       </resource>
+      <!--<resource>-->
+      <!--&lt;!&ndash; 指定resources插件处理哪个目录下的资源文件 &ndash;&gt;-->
+      <!--<directory>src/main/webapp</directory>-->
+      <!--&lt;!&ndash;注意此次必须要放在此目录下才能被访问到 &ndash;&gt;-->
+      <!--<targetPath>META-INF/resources</targetPath>-->
+      <!--<includes>-->
+      <!--<include>**/*.*</include>-->
+      <!--</includes>-->
+      <!--</resource>-->
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>com.share.hy.ShareApplication</mainClass>
+              <useUniqueVersions>false</useUniqueVersions>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <!-- third-party jar into lib directory -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.2.0</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <detail>true</detail>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <source>1.8</source>
+          <target>1.8</target>
+          <compilerArgument>-parameters</compilerArgument>
+          <useIncrementalCompilation>false</useIncrementalCompilation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.2</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>${docker.maven.plugin.version}</version>
+          <executions>
+            <!--如果想在项目打包时构建镜像添加-->
+            <execution>
+              <id>build-image</id>
+              <phase>package</phase>
+              <goals>
+                <goal>build</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <!-- Docker 远程管理地址-->
+            <dockerHost>${docker.host}</dockerHost>
+            <images>
+              <image>
+                <!--定义镜像名称-->
+                <name>share/${project.name}:${project.version}</name>
+                <!--定义镜像构建行为-->
+                <build>
+                  <!--定义基础镜像-->
+                  <from>openjdk:8</from>
+                  <args>
+                    <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                  </args>
+                  <!--定义哪些文件拷贝到容器中-->
+                  <assembly>
+                    <!--定义拷贝到容器的目录-->
+                    <targetDir>/</targetDir>
+                    <!--只拷贝生成的jar包-->
+                    <descriptorRef>artifact</descriptorRef>
+                  </assembly>
+                  <!--定义容器启动命令-->
+                  <entryPoint>["java", "-jar","-Dspring.profiles.active=dev","/${project.build.finalName}.jar"]</entryPoint>
+                  <!--定义维护者-->
+                  <maintainer>share</maintainer>
+                </build>
+              </image>
+            </images>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>
