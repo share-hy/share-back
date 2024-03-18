@@ -2,7 +2,7 @@ spring:
   application:
     name: share-thing
   profiles:
-    active: test #默认为开发环境
+    active: dev #默认为开发环境
 
 mybatis:
   mapper-locations:
