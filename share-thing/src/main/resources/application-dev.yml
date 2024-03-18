@@ -13,7 +13,7 @@ spring:
         login-username: druid
         login-password: druid
   redis:
-    host: localhost
+    host: 8.134.146.201
     database: 0
     port: 6379
     password:

@@ -22,11 +22,21 @@ public enum ErrorCodeEnum {
     private final String message;
 
     public static ErrorCodeEnum getEnumByCode(int code){
-        for (ErrorCodeEnum codeEnum : ErrorCodeEnum.values()) {
-            if (codeEnum.getCode() == code){
-                return codeEnum;
-            }
+        ErrorCodeEnum errorCodeEnumCommon = errorCodeMaps.get(code);
+        if (null == errorCodeEnumCommon) {
+            return new ErrorCodeEnumCommon() {
+                @Override
+                public int getCode() {
+                    return code;
+                }
+
+                @Override
+                public String getDesc() {
+                    return CommonErrorCode.ERROR_SERVER_INTERNAL.getDesc();
+                }
+            };
         }
+        return errorCodeEnumCommon;
         return null;
     }
 
