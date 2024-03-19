@@ -15,6 +15,7 @@ public enum ErrorCodeEnum {
     ERROR_PERMISSION_DENIED(105,"权限不够","无权限操作"),
     ERROR_ACCOUNT_HAS_REGISTERED(106,"账号已注册","账号已被注册，请更换"),
     ERROR_PARAM_WRONG(107,"参数异常","请求参数异常，请检查"),
+    ERROR_SERVER_ERROR(108,"服务异常","服务出小差了，请稍等"),
     ;
 
     private final int code;
@@ -22,22 +23,12 @@ public enum ErrorCodeEnum {
     private final String message;
 
     public static ErrorCodeEnum getEnumByCode(int code){
-        ErrorCodeEnum errorCodeEnumCommon = errorCodeMaps.get(code);
-        if (null == errorCodeEnumCommon) {
-            return new ErrorCodeEnumCommon() {
-                @Override
-                public int getCode() {
-                    return code;
-                }
-
-                @Override
-                public String getDesc() {
-                    return CommonErrorCode.ERROR_SERVER_INTERNAL.getDesc();
-                }
-            };
+        for (ErrorCodeEnum codeEnum : ErrorCodeEnum.values()) {
+            if (codeEnum.getCode() == code){
+                return codeEnum;
+            }
         }
-        return errorCodeEnumCommon;
-        return null;
+        return ErrorCodeEnum.ERROR_SERVER_ERROR;
     }
 
 }

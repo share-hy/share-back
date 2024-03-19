@@ -4,8 +4,6 @@ import java.util.Random;
 
 /**
  * SnowflakeIdWorker工具类
- *
- * @author hongsheng.wei
  */
 public class SnowflakeIdWorker {
 

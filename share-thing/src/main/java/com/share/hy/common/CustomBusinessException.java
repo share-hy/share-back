@@ -26,21 +26,21 @@ public class CustomBusinessException extends RuntimeException{
 
     public CustomBusinessException(int code) {
         super(ErrorCodeEnum.getEnumByCode(code).getDesc());
-        this.errorCodeEnumCommon = ErrorCodeUtils.getErrorCodeEum(code);
+        this.errorCodeEnumCommon = ErrorCodeEnum.getEnumByCode(code);
     }
 
-    public CustomBusinessException(ErrorCodeEnumCommon errorCodeEnumCommon, String replaceErrorDesc) {
+    public CustomBusinessException(ErrorCodeEnum errorCodeEnumCommon, String replaceErrorDesc) {
         super(StringUtils.isBlank(replaceErrorDesc) ? errorCodeEnumCommon.getDesc() : replaceErrorDesc);
         this.errorCodeEnumCommon = errorCodeEnumCommon;
     }
 
-    public CustomBusinessException(String errorMsgNoPromptUser, ErrorCodeEnumCommon errorCodeEnumCommon) {
+    public CustomBusinessException(String errorMsgNoPromptUser, ErrorCodeEnum errorCodeEnumCommon) {
         this(errorCodeEnumCommon);
         this.errorMsgDetails = errorMsgNoPromptUser;
     }
 
     public <T> CustomBusinessException(T... paramsErrorMsg) {
-        this(ErrorCodeUtils.CommonErrorCode.ERROR_REQUEST_PARAMS);
+        this(ErrorCodeEnum.PASSWORD_WRONG);
         StringBuilder stringBuilder = new StringBuilder();
         for (T errorMsg : paramsErrorMsg) {
             stringBuilder.append(errorMsg);

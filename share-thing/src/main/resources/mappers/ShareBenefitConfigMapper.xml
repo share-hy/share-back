@@ -9,11 +9,22 @@
     <result column="amount" jdbcType="DECIMAL" property="amount" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="TIMESTAMP" property="createBy" />
+    <result column="update_by" jdbcType="TIMESTAMP" property="updateBy" />
   </resultMap>
   
   <sql id="BaseColumns">
     <!-- WARNING - @mbg.generated -->
     id, goods_item_id, level, amount, create_time, update_time
   </sql>
-  
+    <insert id="updateOrAdd">
+      INSERT INTO share_benefit_config (goods_item_id,level,amount,create_by,update_by) VALUES
+      <foreach collection="list" item="item" separator=",">
+        (#{item.goodsItemId},#{item.level},#{item.amount},#{item.createBy},{item.updateBy})
+      </foreach>
+      ON DUPLICATE KEY UPDATE
+      amount = values(amount)
+      update_by = values(update_by)
+    </insert>
+
 </mapper>

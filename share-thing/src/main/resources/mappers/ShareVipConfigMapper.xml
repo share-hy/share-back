@@ -9,11 +9,23 @@
     <result column="benefit" jdbcType="VARCHAR" property="benefit" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="TIMESTAMP" property="createBy" />
+    <result column="update_by" jdbcType="TIMESTAMP" property="updateBy" />
   </resultMap>
   
   <sql id="BaseColumns">
     <!-- WARNING - @mbg.generated -->
     id, level, quantity, benefit, create_time, update_time
   </sql>
-  
+  <insert id="updateOrAdd">
+    INSERT INTO share_vip_config (level,quantity,benefit,create_by,update_by) VALUES
+    <foreach collection="list" item="item" separator=",">
+      (#{item.level},#{item.quantity},#{item.benefit},#{item.createBy},{item.updateBy})
+    </foreach>
+    ON DUPLICATE KEY UPDATE
+    quantity=values(quantity),
+    benefit =values(benefit),
+    update_by = values(update_by)
+  </insert>
+
 </mapper>

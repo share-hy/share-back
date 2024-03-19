@@ -9,11 +9,11 @@ public interface IAdminService {
 
     List<VipInfoDTO> vipQuery();
 
-    void vipConfig(List<VipInfoDTO> configs);
+    void vipConfig(List<VipInfoDTO> configs,String operateId);
 
     List<BenefitInfoDTO> benefitQuery();
 
-    void benefitConfig(List<BenefitInfoDTO> benefitInfoDTOS);
+    void benefitConfig(List<BenefitInfoDTO> benefitInfoDTOS,String operateId);
 
 
 

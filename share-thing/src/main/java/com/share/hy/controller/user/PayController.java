@@ -1,8 +1,12 @@
 package com.share.hy.controller.user;
 
+import com.share.hy.common.CustomBusinessException;
 import com.share.hy.common.ResponseMsg;
+import com.share.hy.common.controller.BaseController;
+import com.share.hy.dto.pay.OrderPreCreateResp;
 import com.share.hy.dto.pay.PayCreateDTO;
 import com.share.hy.service.IOrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/share/pay")
-public class PayController {
+@Slf4j
+public class PayController extends BaseController {
 
     @Autowired
     private IOrderService orderService;

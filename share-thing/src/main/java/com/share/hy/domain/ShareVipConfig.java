@@ -3,6 +3,8 @@ package com.share.hy.domain;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
+
+import com.share.hy.dto.admin.VipInfoDTO;
 import lombok.*;
 
 @NoArgsConstructor
@@ -48,6 +50,26 @@ public class ShareVipConfig implements Serializable {
      */
     @Column(name = "update_time")
     private Date updateTime;
+
+    /**
+     * 创建者
+     */
+    @Column(name = "create_by")
+    private String createBy;
+
+    /**
+     * 更新者
+     */
+    @Column(name = "update_by")
+    private String updateBy;
+
+    public ShareVipConfig(VipInfoDTO vipInfoDTO,String operateId) {
+        this.level = vipInfoDTO.getLevel();
+        this.quantity = vipInfoDTO.getQuantity();
+        this.benefit = vipInfoDTO.getBenefit();
+        this.createBy = operateId;
+        this.updateBy = operateId;
+    }
 
     private static final long serialVersionUID = 1L;
 

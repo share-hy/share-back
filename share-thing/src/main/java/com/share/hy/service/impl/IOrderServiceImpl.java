@@ -4,10 +4,16 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.share.hy.common.CustomBusinessException;
+import com.share.hy.common.enums.ErrorCodeEnum;
+import com.share.hy.common.enums.OrderTypeEnum;
 import com.share.hy.common.enums.PaymentPlatEnum;
 import com.share.hy.dto.pay.OrderPreCreateResp;
 import com.share.hy.dto.pay.PayCreateDTO;
 import com.share.hy.service.IOrderService;
+import com.share.hy.utils.OrderUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,60 +25,33 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class IOrderServiceImpl implements IOrderService {
 
     @Autowired
-    private
+    private IOrderManager orderManager;
 
     @Override
     public OrderPreCreateResp preCreateOrder(PayCreateDTO payCreateDTO) {
-        PaymentPlatEnum tradePlatEnum = PaymentPlatEnum.getByCode(param.getTradePlat());
+        PaymentPlatEnum tradePlatEnum = PaymentPlatEnum.getByCode(payCreateDTO.getTradePlat());
         if (null == tradePlatEnum){
-            throw new CustomBusinessException(ErrorCodeUtils.CommonErrorCode.ERROR_REQUEST_PARAMS);
+            throw new CustomBusinessException(ErrorCodeEnum.ERROR_SERVER_ERROR);
         }
         OrderPreCreateResp resp = new OrderPreCreateResp();
 
         String orderId;
         int launchTimes = 1;
-        String goodsItemId = param.getGoodsItemId();
-        Byte type = param.getType();
+        String goodsItemId = payCreateDTO.getGoodsItemId();
+        Byte type = payCreateDTO.getType();
         BigDecimal totalPrice = null;
         DateTime now = DateTime.now();
         Long expireTime = null;
-        if (StrUtil.isNotBlank(param.getOrderId())) {
-            orderId = param.getOrderId();
-            PaymentOrder paymentOrder = orderManager.selByOrderId(orderId);
-            if (null == paymentOrder){
-                log.warn("not find the order, can not pay:{}",orderId);
-                throw new CustomBusinessException(ErrorCodeUtils.PaymentErrorCode.ERROR_ORDER_NOT_EXIST);
-            }
-            if (null != paymentOrder.getStatus() && !paymentOrder.getStatus().equals(OrderStatusEnum.CREATED.getStatus())){
-                log.warn("only wait payed order can be pay:{}", JSONObject.toJSONString(paymentOrder));
-                throw new CustomBusinessException(ErrorCodeUtils.PaymentErrorCode.ERROR_ORDER_HAS_EXPIRED);
-            }
-            if (now.getTime() - paymentOrder.getCreateTime().getTime() > OrderConstant.DUE_OVERTIME_MILL_SECONDS){
-                orderManager.updateOrderState(orderId,OrderStatusEnum.OVERTIME.getStatus());
-                throw new CustomBusinessException(ErrorCodeUtils.PaymentErrorCode.ERROR_NOT_ALLOWED_TO_PAY);
-            }
-            launchTimes = paymentOrder.getLaunchTimes() + 1;
-            paymentOrder.setLaunchTimes(launchTimes);
-            orderManager.updateByOrderId(paymentOrder);
-            expireTime = paymentOrder.getCreateTime().getTime() + OrderConstant.DUE_OVERTIME_MILL_SECONDS;
-            List<PaymentOrderDetail> orderDetails = orderManager.queryOrderDetails(param.getOrderId());
-            if (CollectionUtils.isNotEmpty(orderDetails)){
-                PaymentOrderDetail orderDetail = orderDetails.get(0);
-                goodsItemId = orderDetail.getSubjectId();
-                type = orderDetail.getType();
-                totalPrice = orderDetail.getAmount().multiply(new BigDecimal(orderDetail.getQuantity()));
-            }
-        } else {
-            orderId = OrderUtil.generateOrderId();
-        }
-        String tradePlat = param.getTradePlat();
+        orderId = OrderUtil.generateOrderId();
+        String tradePlat = payCreateDTO.getTradePlat();
         OrderTypeEnum typeEnum = OrderTypeEnum.getOrderType(type);
         if (null == typeEnum){
-            log.warn("order type wrong:{}",JSONObject.toJSONString(param));
-            throw new CustomBusinessException(ErrorCodeUtils.CommonErrorCode.ERROR_REQUEST_PARAMS);
+            log.warn("order type wrong:{}",JSONObject.toJSONString(payCreateDTO));
+            throw new CustomBusinessException(ErrorCodeEnum.ERROR_PARAM_WRONG);
         }
 
         PaymentGoodsItem goodsItem = goodsItemManager.getGoodsItem(goodsItemId);
