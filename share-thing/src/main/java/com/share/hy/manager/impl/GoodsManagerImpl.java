@@ -72,4 +72,10 @@ public class GoodsManagerImpl implements GoodsManager {
         example.createCriteria().andEqualTo("userId",userId);
         return shareServiceRecordMapper.selectByExample(example);
     }
+
+    @Override
+    public ShareGoodsItem queryByGoodsItemId(String goodsItemId) {
+
+
+    }
 }

@@ -8,8 +8,12 @@ import com.share.hy.common.CustomBusinessException;
 import com.share.hy.common.enums.ErrorCodeEnum;
 import com.share.hy.common.enums.OrderTypeEnum;
 import com.share.hy.common.enums.PaymentPlatEnum;
+import com.share.hy.domain.ShareGoodsItem;
 import com.share.hy.dto.pay.OrderPreCreateResp;
 import com.share.hy.dto.pay.PayCreateDTO;
+import com.share.hy.dto.pay.PaymentPreCreateInfoDTO;
+import com.share.hy.manager.GoodsManager;
+import com.share.hy.manager.IOrderManager;
 import com.share.hy.service.IOrderService;
 import com.share.hy.utils.OrderUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +35,9 @@ public class IOrderServiceImpl implements IOrderService {
     @Autowired
     private IOrderManager orderManager;
 
+    @Autowired
+    private GoodsManager goodsItemManager;
+
     @Override
     public OrderPreCreateResp preCreateOrder(PayCreateDTO payCreateDTO) {
         PaymentPlatEnum tradePlatEnum = PaymentPlatEnum.getByCode(payCreateDTO.getTradePlat());
@@ -43,7 +50,6 @@ public class IOrderServiceImpl implements IOrderService {
         int launchTimes = 1;
         String goodsItemId = payCreateDTO.getGoodsItemId();
         Byte type = payCreateDTO.getType();
-        BigDecimal totalPrice = null;
         DateTime now = DateTime.now();
         Long expireTime = null;
         orderId = OrderUtil.generateOrderId();
@@ -54,15 +60,11 @@ public class IOrderServiceImpl implements IOrderService {
             throw new CustomBusinessException(ErrorCodeEnum.ERROR_PARAM_WRONG);
         }
 
-        PaymentGoodsItem goodsItem = goodsItemManager.getGoodsItem(goodsItemId);
+        ShareGoodsItem goodsItem = goodsItemManager.queryByGoodsItemId(goodsItemId);
         if (null == goodsItem){
-            log.warn("goodsItem not exist:{}",JSONObject.toJSONString(param));
-            throw new CustomBusinessException(ErrorCodeUtils.CommonErrorCode.ERROR_REQUEST_PARAMS);
+            log.warn("goodsItem not exist:{}",JSONObject.toJSONString(payCreateDTO));
+            throw new CustomBusinessException(ErrorCodeEnum.ERROR_PARAM_WRONG);
         }
-        if (null == totalPrice){
-            totalPrice = goodsItem.getRawPrice();
-        }
-
         resp.setQueryId(orderId);
         resp.setOrderId(orderId);
 
@@ -70,7 +72,7 @@ public class IOrderServiceImpl implements IOrderService {
         String expireTimeStr = format.format(new Date(expireTime == null ? now.getTime() + OrderConstant.DUE_OVERTIME_MILL_SECONDS : expireTime));
 
         LaunchPayDTO launchPayDTO = new LaunchPayDTO(orderId + "_" + launchTimes, totalPrice , goodsItem.getGoodsItemId(),
-                orderId, param.getUserId(), typeEnum, param.getPayMode(), param.getQrcodeWidth(),expireTimeStr);
+                orderId, payCreateDTO.getUserId(), typeEnum, payCreateDTO.getPayMode(), payCreateDTO.getQrcodeWidth(),expireTimeStr);
 
         String url = PaymentFuncHolder.getPaymentService(tradePlatEnum).launchPay(launchPayDTO);
 
@@ -85,9 +87,8 @@ public class IOrderServiceImpl implements IOrderService {
         PaymentPreCreateInfoDTO paymentPrecreateInfoDTO = new PaymentPreCreateInfoDTO();
         paymentPrecreateInfoDTO.setTradePlat(tradePlat);
         paymentPrecreateInfoDTO.setPayload(alipayPayloadStr);
-        paymentPrecreateInfoDTO.setUserId(param.getUserId());
+        paymentPrecreateInfoDTO.setUserId(payCreateDTO.getUserId());
         paymentPrecreateInfoDTO.setGoodsItemId(goodsItemId);
-        paymentPrecreateInfoDTO.setSubscription(goodsItem.getSubscribed());
         paymentPrecreateInfoDTO.setOrderType(typeEnum.getType());
         paymentPrecreateInfoDTO.setCreateTime(System.currentTimeMillis());
         paymentPrecreateInfoDTO.setLaunchTimes(launchTimes);
