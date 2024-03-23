@@ -16,6 +16,8 @@ public enum ErrorCodeEnum {
     ERROR_ACCOUNT_HAS_REGISTERED(106,"账号已注册","账号已被注册，请更换"),
     ERROR_PARAM_WRONG(107,"参数异常","请求参数异常，请检查"),
     ERROR_SERVER_ERROR(108,"服务异常","服务出小差了，请稍等"),
+    ERROR_ORDER_NOT_EXIST(109,"订单不存在","此订单不存在"),
+    ERROR_ORDER_CANNOT_REFUND_STATUS_INCORRECT(110,"支付未完成，不允许退款","支付未完成，不允许退款"),
     ;
 
     private final int code;

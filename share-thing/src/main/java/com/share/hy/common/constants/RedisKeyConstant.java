@@ -13,4 +13,8 @@ public class RedisKeyConstant {
     public static String getConsoleLimit(String userId){
         return CONSOLE_LIMIT + userId;
     }
+
+    private static final String PRE_CREATE_INFO_PREFIX = "pre_create_info:";
+    public static final String PAY_REDIS_KEY = "pay:";
+    public static final String INFO_KEY_PREFIX = RedisKeyConstant.PAY_REDIS_KEY + PRE_CREATE_INFO_PREFIX;
 }

@@ -1,4 +1,4 @@
-package com.share.hy.service;
+package com.share.hy.service.pay;
 
 import com.share.hy.common.enums.PaymentPlatEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class PaymentFuncHolder {

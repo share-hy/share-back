@@ -7,4 +7,5 @@ public class OrderPreCreateResp {
     private String queryId;
     private String orderId;
     private String payload;
+    private String target;
 }

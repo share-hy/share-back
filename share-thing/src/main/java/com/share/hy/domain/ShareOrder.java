@@ -61,8 +61,8 @@ public class ShareOrder implements Serializable {
     /**
      * 商品id
      */
-    @Column(name = "goods_id")
-    private String goodsId;
+    @Column(name = "goods_item_id")
+    private String goodsItemId;
 
     /**
      * 第三方交易单id,

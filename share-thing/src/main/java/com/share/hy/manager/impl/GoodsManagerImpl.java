@@ -35,6 +35,8 @@ public class GoodsManagerImpl implements GoodsManager {
 
     private static Map<Byte,List<GoodsDTO>> ONLINE_GOODS = new HashMap<>();
 
+    private static Map<String,String> GOODS_TO_NAME = new HashMap<>();
+
     @PostConstruct
     @Override
     public void init() {
@@ -50,6 +52,7 @@ public class GoodsManagerImpl implements GoodsManager {
             GoodsDTO goodsDTO = new GoodsDTO();
             goodsDTO.setName(goods.getGoodsName());
             goodsDTO.setDesc(goodsDTO.getDesc());
+            GOODS_TO_NAME.put(goodItem.getGoodsId(),goods.getGoodsName());
             goodsDTO.setGoodsItemId(goodItem.getGoodsItemId());
             goodsDTO.setDuration(goodItem.getDuration());
             goodsDTO.setDay(DurationEnum.getDayByDuration(goodItem.getDuration()));
@@ -75,7 +78,22 @@ public class GoodsManagerImpl implements GoodsManager {
 
     @Override
     public ShareGoodsItem queryByGoodsItemId(String goodsItemId) {
+        Example example = new Example(ShareGoodsItem.class);
+        example.createCriteria().andEqualTo("goodsItemId",goodsItemId);
 
+        return shareGoodsItemMapper.selectOneByExample(example);
 
+    }
+
+    @Override
+    public String getGoodsName(String goodsItemId) {
+        return GOODS_TO_NAME.get(goodsItemId);
+    }
+
+    @Override
+    public List<ShareGoodsItem> queryByGoodsItemIds(List<String> goodsItemIds) {
+        Example example = new Example(ShareGoodsItem.class);
+        example.createCriteria().andIn("goodsItemId",goodsItemIds);
+        return shareGoodsItemMapper.selectByExample(example);
     }
 }

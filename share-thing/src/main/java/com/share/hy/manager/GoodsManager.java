@@ -16,4 +16,7 @@ public interface GoodsManager {
 
     ShareGoodsItem queryByGoodsItemId(String goodsItemId);
 
+    String getGoodsName(String goodsItemId);
+
+    List<ShareGoodsItem> queryByGoodsItemIds(List<String> goodsItemIds);
 }

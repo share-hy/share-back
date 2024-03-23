@@ -1,8 +1,11 @@
-package com.share.hy.service;
+package com.share.hy.service.pay;
 
 
 import com.share.hy.common.enums.PaymentPlatEnum;
+import com.share.hy.dto.pay.LaunchPayDTO;
 import com.share.hy.dto.pay.PaymentCheckDTO;
+import com.share.hy.dto.pay.PaymentPreCreateInfoDTO;
+import com.share.hy.dto.pay.PaymentRegularCheckDTO;
 
 public interface PaymentService {
     PaymentPlatEnum getTradePlat();
