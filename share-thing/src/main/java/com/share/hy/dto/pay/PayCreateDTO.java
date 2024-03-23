@@ -13,6 +13,11 @@ public class PayCreateDTO {
     private String tradePlat;
 
     /**
+     * 是否使用余额
+     */
+    private Byte useBalance;
+
+    /**
      * PayModeEnum
      */
     private String payMode;

@@ -1,20 +1,21 @@
 package com.share.hy.service.impl;
 
+import com.share.hy.common.enums.DurationEnum;
 import com.share.hy.common.enums.GoodsStatusEnum;
 import com.share.hy.common.enums.ServiceStatusEnum;
+import com.share.hy.domain.ShareGoodsItem;
 import com.share.hy.domain.ShareServiceRecord;
 import com.share.hy.dto.goods.GoodsDTO;
 import com.share.hy.dto.goods.GoodsDetailDTO;
+import com.share.hy.dto.goods.PurchaseInfoDTO;
 import com.share.hy.manager.GoodsManager;
 import com.share.hy.service.IGoodsService;
+import com.share.hy.utils.TimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,10 +70,11 @@ public class IGoodsServiceImpl implements IGoodsService {
     public GoodsDetailDTO detail(String userId, String goodsItemId) {
         List<ShareServiceRecord> serviceRecordList = goodsManager.queryServiceRecordByUserIdAndStatus(userId, ServiceStatusEnum.NORMAL.getStatus());
         //之前没有购买过，第一次订购
+        PurchaseInfoDTO purchaseInfoDTO;
         if (CollectionUtils.isEmpty(serviceRecordList)){
-            directPurchase(userId,goodsItemId);
+            purchaseInfoDTO = directPurchase(userId,goodsItemId);
         }else{
-            upgradeOrRenewal(userId,serviceRecordList.get(0),goodsItemId);
+            purchaseInfoDTO = upgradeOrRenewal(userId,serviceRecordList.get(0),goodsItemId);
         }
 
     }
@@ -82,11 +84,16 @@ public class IGoodsServiceImpl implements IGoodsService {
      * @param userId
      * @param goodsItemId
      */
-    private void upgradeOrRenewal(String userId,ShareServiceRecord serviceRecord, String goodsItemId) {
+    private PurchaseInfoDTO upgradeOrRenewal(String userId,ShareServiceRecord serviceRecord, String goodsItemId) {
 
     }
 
-    private void directPurchase(String userId, String goodsItemId) {
-
+    private PurchaseInfoDTO directPurchase(String userId, String goodsItemId) {
+        ShareGoodsItem shareGoodsItem = goodsManager.queryByGoodsItemId(goodsItemId);
+        PurchaseInfoDTO purchaseInfoDTO = new PurchaseInfoDTO();
+        purchaseInfoDTO.setPaymentAmount(shareGoodsItem.getRawPrice());
+        Date assignTime = TimeUtil.getAssignTime(DurationEnum.getDayByDuration(shareGoodsItem.getDuration()));
+        purchaseInfoDTO.setRenewalTime(assignTime.getTime());
+        purchaseInfoDTO.setAvailableBalance();
     }
 }
