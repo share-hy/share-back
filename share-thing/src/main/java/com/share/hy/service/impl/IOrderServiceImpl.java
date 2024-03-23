@@ -276,6 +276,7 @@ public class IOrderServiceImpl implements IOrderService {
 
         toInsertOrder.setPaymentAmount(param.getTotalAmount());
         toInsertOrder.setPayTime(payTime);
+        toInsertOrder.setGoodsItemId(goodsItemId);
         toInsertOrder.setUserId(userId);
         toInsertOrder.setTradeId(internalTradeId);
         toInsertOrder.setCurrency(param.getCurrency());

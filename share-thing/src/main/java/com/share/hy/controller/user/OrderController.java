@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/share/pay")
+@RequestMapping("/v1/share/Order")
 @Slf4j
-public class PayController extends BaseController {
+public class OrderController extends BaseController {
 
     @Autowired
     private IOrderService orderService;

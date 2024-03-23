@@ -1,6 +1,7 @@
 package com.share.hy.manager.impl;
 
 import com.share.hy.common.enums.DurationEnum;
+import com.share.hy.common.enums.GoodsStatusEnum;
 import com.share.hy.domain.ShareGoods;
 import com.share.hy.domain.ShareGoodsItem;
 import com.share.hy.domain.ShareServiceRecord;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,9 +31,11 @@ public class GoodsManagerImpl implements GoodsManager {
     @Autowired
     private ShareServiceRecordMapper shareServiceRecordMapper;
 
-    private static Map<Byte,List<GoodsDTO>> ONLINE_GOODS = new HashMap<>();
+    private static final Map<Byte,List<GoodsDTO>> ONLINE_GOODS = new HashMap<>();
 
-    private static Map<String,String> GOODS_TO_NAME = new HashMap<>();
+    private static final Map<String,ShareGoodsItem> GOODS_ITEM_MAP = new HashMap<>();
+
+    private static Map<String,ShareGoods> GOODS_MAP = new HashMap<>();
 
     @PostConstruct
     @Override
@@ -47,12 +47,15 @@ public class GoodsManagerImpl implements GoodsManager {
             return;
         }
         Map<String, ShareGoods> goodsMap = shareGoods.stream().collect(Collectors.toMap(ShareGoods::getGoodsId, k -> k));
+        GOODS_MAP = goodsMap;
         shareGoodsItems.forEach(goodItem ->{
             ShareGoods goods = goodsMap.get(goodItem.getGoodsId());
             GoodsDTO goodsDTO = new GoodsDTO();
             goodsDTO.setName(goods.getGoodsName());
             goodsDTO.setDesc(goodsDTO.getDesc());
-            GOODS_TO_NAME.put(goodItem.getGoodsId(),goods.getGoodsName());
+            goodsDTO.setGoodsStatus(GoodsStatusEnum.NORMAL.getCode());
+            goodsDTO.setLevel(goods.getLevel());
+            GOODS_ITEM_MAP.put(goodItem.getGoodsId(),goodItem);
             goodsDTO.setGoodsItemId(goodItem.getGoodsItemId());
             goodsDTO.setDuration(goodItem.getDuration());
             goodsDTO.setDay(DurationEnum.getDayByDuration(goodItem.getDuration()));
@@ -70,30 +73,51 @@ public class GoodsManagerImpl implements GoodsManager {
     }
 
     @Override
-    public List<ShareServiceRecord> queryServiceRecordByUserId(String userId) {
+    public List<ShareServiceRecord> queryServiceRecordByUserIdAndStatus(String userId,Byte status) {
         Example example = new Example(ShareServiceRecord.class);
-        example.createCriteria().andEqualTo("userId",userId);
+        Example.Criteria criteria = example.createCriteria().andEqualTo("userId", userId);
+        if (null != status){
+            criteria.andEqualTo("status",status);
+        }
         return shareServiceRecordMapper.selectByExample(example);
     }
 
     @Override
     public ShareGoodsItem queryByGoodsItemId(String goodsItemId) {
-        Example example = new Example(ShareGoodsItem.class);
-        example.createCriteria().andEqualTo("goodsItemId",goodsItemId);
+        return GOODS_ITEM_MAP.get(goodsItemId);
+    }
 
-        return shareGoodsItemMapper.selectOneByExample(example);
-
+    @Override
+    public Byte getLevelByGoodsItemId(String goodsItemId) {
+        ShareGoodsItem shareGoodsItem = GOODS_ITEM_MAP.get(goodsItemId);
+        if (null == shareGoodsItem){
+            return null;
+        }
+        ShareGoods shareGoods = GOODS_MAP.get(shareGoodsItem.getGoodsId());
+        if (null == shareGoods){
+            return null;
+        }
+        return shareGoods.getLevel();
     }
 
     @Override
     public String getGoodsName(String goodsItemId) {
-        return GOODS_TO_NAME.get(goodsItemId);
+        ShareGoodsItem goodsItem = GOODS_ITEM_MAP.get(goodsItemId);
+        if (null == goodsItem){
+            return "";
+        }
+        ShareGoods shareGoods = GOODS_MAP.get(goodsItem.getGoodsId());
+        if (null == shareGoods){
+            return "";
+        }
+        return shareGoods.getGoodsName();
     }
 
     @Override
     public List<ShareGoodsItem> queryByGoodsItemIds(List<String> goodsItemIds) {
-        Example example = new Example(ShareGoodsItem.class);
-        example.createCriteria().andIn("goodsItemId",goodsItemIds);
-        return shareGoodsItemMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(goodsItemIds)){
+            return Collections.emptyList();
+        }
+        return goodsItemIds.stream().map(GOODS_ITEM_MAP::get).collect(Collectors.toList());
     }
 }

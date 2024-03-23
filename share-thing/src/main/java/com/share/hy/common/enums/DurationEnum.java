@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 public enum DurationEnum {
 
-    MONTH((byte)0,31,"月"),
-    QUARTER((byte)1,92,"季度"),
-    YEAR((byte)2,366,"年");
+    MONTH((byte)0,31,"包月"),
+    QUARTER((byte)1,92,"包季度"),
+    YEAR((byte)2,366,"包年");
 
     private final byte duration;
     private final int day;

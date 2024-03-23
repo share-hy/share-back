@@ -24,4 +24,13 @@ public class GoodsController extends BaseController {
         return success(goodsService.queryByUserId(httpCommonHeader.getUserId()));
     }
 
+    /**
+     *
+     */
+    @GetMapping("detail")
+    public ResponseMsg<?> detail(@RequestParam String goodsItemId){
+        HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
+        return success(goodsService.detail(httpCommonHeader.getUserId(),goodsItemId));
+    }
+
 }

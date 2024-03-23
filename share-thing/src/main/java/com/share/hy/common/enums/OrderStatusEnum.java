@@ -19,7 +19,7 @@ public enum OrderStatusEnum {
     REFUNDED((byte)5,"退款成功"),
 
     ;
-    private final Byte status;
+    private final byte status;
     private final String description;
 
 
