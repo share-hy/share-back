@@ -60,6 +60,12 @@ public class ShareGoodsItem implements Serializable {
     private String remark;
 
     /**
+     * 单价(服务则指每天的价格)
+     */
+    @Column
+    private BigDecimal unitPrice;
+
+    /**
      * 修改时间
      */
     @Column(name = "update_time")

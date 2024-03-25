@@ -1,5 +1,6 @@
 package com.share.hy.service.impl;
 
+import com.share.hy.common.CustomBusinessException;
 import com.share.hy.common.constants.CookieConstant;
 import com.share.hy.common.constants.UserConstant;
 import com.share.hy.common.enums.ErrorCodeEnum;
@@ -12,6 +13,7 @@ import com.share.hy.service.IUserService;
 import com.share.hy.utils.Md5Util;
 import com.share.hy.utils.SpringRequestHolderUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -52,7 +54,14 @@ public class UserServiceImpl implements IUserService {
         ShareUser shareUser = new ShareUser();
         shareUser.setPassword(Md5Util.MD5With32(userRegister.getPassword()));
         shareUser.setUserName(userRegister.getUserName());
-        String userId = UserConstant.generateUserId();
+        String userId;
+        if (StringUtils.isNotBlank(userRegister.getInviteUserId())){
+            shareUser.setFrom(userRegister.getInviteUserId());
+            userId = userManager.getNextSubUserId(userRegister.getInviteUserId());
+        }
+        else{
+            userId = UserConstant.generateUserId();
+        }
         String token = generateToken();
         setCookie(token, userId);
         userManager.saveToken(token,userId);
@@ -65,6 +74,15 @@ public class UserServiceImpl implements IUserService {
     @Override
     public AccountInfo accountInfo(String userId) {
         return null;
+    }
+
+    @Override
+    public String queryUserAccount(String userId) {
+        String account = userManager.queryAccountByUserId(userId);
+        if (null == account){
+            throw new CustomBusinessException(ErrorCodeEnum.ERROR_ORDER_NOT_EXIST);
+        }
+        return account;
     }
 
     private void setCookie(String token,String userId){

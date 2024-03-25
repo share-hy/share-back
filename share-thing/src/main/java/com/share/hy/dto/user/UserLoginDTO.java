@@ -22,4 +22,6 @@ public class UserLoginDTO implements Serializable {
 	@NotEmpty(message = "password can not null")
 	private String password;
 
+	private String inviteUserId;
+
 }

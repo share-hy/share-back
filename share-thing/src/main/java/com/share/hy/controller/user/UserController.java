@@ -46,8 +46,17 @@ public class UserController extends BaseController {
         String userId = CookieConstant.getCookieValue(CookieConstant.COOKIE_USER_ID);
         stringRedisTemplate.delete(RedisKeyConstant.getUserTokenKey(token));
         log.info("userId logout:{},token:{}",userId,token);
-
         return success();
+    }
+
+    /**
+     * 查询用户账号
+     * @param s userId
+     * @return
+     */
+    @GetMapping("s/{s}")
+    public ResponseMsg<?> info(@PathVariable String s){
+        return success(userService.queryUserAccount(s));
     }
 
     @GetMapping("account/info")

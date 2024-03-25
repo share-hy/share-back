@@ -11,5 +11,12 @@ public class PurchaseInfoDTO {
 
     private BigDecimal availableBalance;
 
+    /**
+     * 新增时长天数
+     */
+    private Integer addDuration;
+
     private BigDecimal paymentAmount;
+
+    private Byte goodsStatus;
 }

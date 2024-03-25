@@ -18,6 +18,8 @@ public enum ErrorCodeEnum {
     ERROR_SERVER_ERROR(108,"服务异常","服务出小差了，请稍等"),
     ERROR_ORDER_NOT_EXIST(109,"订单不存在","此订单不存在"),
     ERROR_ORDER_CANNOT_REFUND_STATUS_INCORRECT(110,"支付未完成，不允许退款","支付未完成，不允许退款"),
+    ERROR_NOT_FIND_UNIT_PRICE(111,"当前商品未配置单价","当前商品未配置单价"),
+    ERROR_NOT_FIND_ACCOUNT_INFO(112,"找不到账号信息","找不到账号信息"),
     ;
 
     private final int code;

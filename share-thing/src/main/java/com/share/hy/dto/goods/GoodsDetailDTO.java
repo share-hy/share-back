@@ -12,6 +12,4 @@ public class GoodsDetailDTO extends PurchaseInfoDTO {
     private String serviceName;
 
     private Integer durationDay;
-
-    private BigDecimal rawPrice;
 }

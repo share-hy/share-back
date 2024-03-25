@@ -11,4 +11,6 @@ public interface IUserService {
     ErrorCodeEnum register(UserLoginDTO userRegister) throws Exception;
 
     AccountInfo accountInfo(String userId);
+
+    String queryUserAccount(String userId);
 }

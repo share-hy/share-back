@@ -46,6 +46,12 @@ public class ShareServiceRecord implements Serializable {
     @Column(name = "expired_time")
     private Date expiredTime;
 
+    /**
+     * 开始时间
+     */
+    @Column(name = "start_time")
+    private Date startTime;
+
     @Column(name = "create_time")
     private Date createTime;
 

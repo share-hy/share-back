@@ -25,7 +25,7 @@ public class GoodsController extends BaseController {
     }
 
     /**
-     *
+     * 套餐支付详情
      */
     @GetMapping("detail")
     public ResponseMsg<?> detail(@RequestParam String goodsItemId){

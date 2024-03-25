@@ -38,6 +38,12 @@ public class ShareUser implements Serializable {
     private Byte vip;
 
     /**
+     * 邀请注册的userId
+     */
+    @Column(name = "from")
+    private String from;
+
+    /**
      * 创建时间
      */
     @Column(name = "create_time")

@@ -1,6 +1,9 @@
 package com.share.hy.service.impl;
 
+import cn.hutool.core.date.DateTime;
+import com.share.hy.common.CustomBusinessException;
 import com.share.hy.common.enums.DurationEnum;
+import com.share.hy.common.enums.ErrorCodeEnum;
 import com.share.hy.common.enums.GoodsStatusEnum;
 import com.share.hy.common.enums.ServiceStatusEnum;
 import com.share.hy.domain.ShareGoodsItem;
@@ -76,47 +79,77 @@ public class IGoodsServiceImpl implements IGoodsService {
 
     @Override
     public GoodsDetailDTO detail(String userId, String goodsItemId) {
+        ShareGoodsItem shareGoodsItem = goodsManager.queryByGoodsItemId(goodsItemId);
+        if (null == shareGoodsItem){
+            throw new CustomBusinessException(ErrorCodeEnum.ERROR_PARAM_WRONG);
+        }
         List<ShareServiceRecord> serviceRecordList = goodsManager.queryServiceRecordByUserIdAndStatus(userId, ServiceStatusEnum.NORMAL.getStatus());
         //之前没有购买过，第一次订购
         PurchaseInfoDTO purchaseInfoDTO;
         if (CollectionUtils.isEmpty(serviceRecordList)){
-            purchaseInfoDTO = directPurchase(userId,goodsItemId);
+            purchaseInfoDTO = directPurchase(userId,shareGoodsItem);
         }else{
-            purchaseInfoDTO = upgradeOrRenewal(userId,serviceRecordList.get(0),goodsItemId);
+            purchaseInfoDTO = upgradeOrRenewal(userId,serviceRecordList.get(0),shareGoodsItem);
         }
+        GoodsDetailDTO goodsDetailDTO = new GoodsDetailDTO();
+        String goodsName = goodsManager.getGoodsName(goodsItemId);
+        goodsDetailDTO.setServiceName(generateServiceName(goodsName,purchaseInfoDTO.getGoodsStatus()));
+        goodsDetailDTO.setGoodsItemId(goodsItemId);
+        goodsDetailDTO.setDurationDay(DurationEnum.getDayByDuration(shareGoodsItem.getDuration()));
+        return goodsDetailDTO;
+    }
 
+    private String generateServiceName(String goodsName, Byte goodsStatus) {
+        String desc = GoodsStatusEnum.getDescByCode(goodsStatus);
+        return goodsName + "(" + desc + ")";
     }
 
     /**
      * 升级或续期
      * @param userId
-     * @param goodsItemId
      */
-    private PurchaseInfoDTO upgradeOrRenewal(String userId,ShareServiceRecord serviceRecord, String goodsItemId) {
-        ShareUserAccount userAccount = accountManager.queryAccountByUserId(userId);
+    private PurchaseInfoDTO upgradeOrRenewal(String userId,ShareServiceRecord serviceRecord, ShareGoodsItem thisGoods) {
         PurchaseInfoDTO purchaseInfoDTO = new PurchaseInfoDTO();
+        ShareUserAccount userAccount = accountManager.queryAccountByUserId(userId);
         purchaseInfoDTO.setAvailableBalance(null != userAccount ? userAccount.getBalance() : new BigDecimal(0));
-        ShareGoodsItem thisGoods = goodsManager.queryByGoodsItemId(goodsItemId);
         //续期
-        if (serviceRecord.getGoodsItemId().equals(goodsItemId)){
+        if (serviceRecord.getGoodsItemId().equals(thisGoods.getGoodsItemId())){
+            purchaseInfoDTO.setGoodsStatus(GoodsStatusEnum.RENEWAL.getCode());
             Date expiredTime = serviceRecord.getExpiredTime();
             Long distanceTime = TimeUtil.getDistanceTime(expiredTime, DurationEnum.getDayByDuration(thisGoods.getDuration()));
             purchaseInfoDTO.setRenewalTime(distanceTime);
             purchaseInfoDTO.setPaymentAmount(thisGoods.getRawPrice());
         }
-        //升级
+        //升级的续期时间要跟当前套餐一致
         else{
             ShareGoodsItem existGoods = goodsManager.queryByGoodsItemId(serviceRecord.getGoodsItemId());
-
+            //计算当前服务已使用了多少天，花了多少钱，再用需要升级服务的总价减去，就是需要补的价钱。
+            int days = TimeUtil.calculateGap(new DateTime(), serviceRecord.getExpiredTime());
+            //当天到期，则全款购买新的套餐，从明天开始计算
+            if (days == 0){
+                purchaseInfoDTO.setRenewalTime(TimeUtil.getDistanceTime(serviceRecord.getExpiredTime(), DurationEnum.getDayByDuration(thisGoods.getDuration())));
+                purchaseInfoDTO.setPaymentAmount(thisGoods.getRawPrice());
+            }
+            else{
+                purchaseInfoDTO.setRenewalTime(TimeUtil.getDistanceTime(serviceRecord.getExpiredTime(), days + DurationEnum.getDayByDuration(thisGoods.getDuration())));
+                BigDecimal unitPrice = existGoods.getUnitPrice();
+                if (null == unitPrice){
+                    throw new CustomBusinessException(ErrorCodeEnum.ERROR_NOT_FIND_UNIT_PRICE);
+                }
+                BigDecimal usedMoney = unitPrice.multiply(new BigDecimal(days));
+                BigDecimal needPay = thisGoods.getRawPrice().subtract(usedMoney);
+                purchaseInfoDTO.setPaymentAmount(needPay);
+            }
         }
+        return purchaseInfoDTO;
     }
 
-    private PurchaseInfoDTO directPurchase(String userId, String goodsItemId) {
-        ShareGoodsItem shareGoodsItem = goodsManager.queryByGoodsItemId(goodsItemId);
+    private PurchaseInfoDTO directPurchase(String userId, ShareGoodsItem shareGoodsItem ) {
         PurchaseInfoDTO purchaseInfoDTO = new PurchaseInfoDTO();
         purchaseInfoDTO.setPaymentAmount(shareGoodsItem.getRawPrice());
         long assignTime = TimeUtil.getAssignTime(DurationEnum.getDayByDuration(shareGoodsItem.getDuration()));
         purchaseInfoDTO.setRenewalTime(assignTime);
+        purchaseInfoDTO.setGoodsStatus(GoodsStatusEnum.NORMAL.getCode());
         ShareUserAccount userAccount = accountManager.queryAccountByUserId(userId);
         purchaseInfoDTO.setAvailableBalance(null != userAccount ? userAccount.getBalance() : new BigDecimal(0));
         return purchaseInfoDTO;

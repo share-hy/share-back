@@ -13,4 +13,8 @@ public interface IUserManager {
     void newAddUser(ShareUser shareUser);
 
     ShareUser getAdminUser(String userId);
+
+    String queryAccountByUserId(String userId);
+
+    String getNextSubUserId(String userId);
 }
