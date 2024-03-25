@@ -1,6 +1,7 @@
 package com.share.hy.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 import lombok.*;
@@ -29,7 +30,7 @@ public class ShareUserAccount implements Serializable {
      * 余额
      */
     @Column(name = "balance")
-    private Long balance;
+    private BigDecimal balance;
 
     /**
      * 上一次充值的时间

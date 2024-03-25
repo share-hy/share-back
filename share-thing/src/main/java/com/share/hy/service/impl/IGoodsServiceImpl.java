@@ -5,16 +5,19 @@ import com.share.hy.common.enums.GoodsStatusEnum;
 import com.share.hy.common.enums.ServiceStatusEnum;
 import com.share.hy.domain.ShareGoodsItem;
 import com.share.hy.domain.ShareServiceRecord;
+import com.share.hy.domain.ShareUserAccount;
 import com.share.hy.dto.goods.GoodsDTO;
 import com.share.hy.dto.goods.GoodsDetailDTO;
 import com.share.hy.dto.goods.PurchaseInfoDTO;
 import com.share.hy.manager.GoodsManager;
+import com.share.hy.manager.IAccountManager;
 import com.share.hy.service.IGoodsService;
 import com.share.hy.utils.TimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,8 @@ public class IGoodsServiceImpl implements IGoodsService {
 
     @Autowired
     private GoodsManager goodsManager;
+    @Autowired
+    private IAccountManager accountManager;
 
     @Override
     public Map<String, List<GoodsDTO>> queryByUserId(String userId) {
@@ -49,21 +54,24 @@ public class IGoodsServiceImpl implements IGoodsService {
                 String goodsItemId = goods.getGoodsItemId();
                 Byte level = goodsManager.getLevelByGoodsItemId(goodsItemId);
                 if (null != level){
-                    byte goodsStatus;
-                    if (existLevel > level){
-                        goodsStatus = GoodsStatusEnum.NO_SUPPORT.getCode();
-                    }
-                    else if(existLevel.equals(level)){
-                        goodsStatus = GoodsStatusEnum.RENEWAL.getCode();
-                    }
-                    else {
-                        goodsStatus = GoodsStatusEnum.UPGRADE.getCode();
-                    }
-                    goods.setGoodsStatus(goodsStatus);
+                    GoodsStatusEnum goodsStatusEnum = judgeGoodsStatus(existLevel, level);
+                    goods.setGoodsStatus(goodsStatusEnum.getCode());
                 }
             });
         });
         return resultMap;
+    }
+
+    private GoodsStatusEnum judgeGoodsStatus(Byte existLevel, Byte level) {
+        if (existLevel > level){
+            return GoodsStatusEnum.NO_SUPPORT;
+        }
+        else if(existLevel.equals(level)){
+            return GoodsStatusEnum.RENEWAL;
+        }
+        else {
+            return GoodsStatusEnum.UPGRADE;
+        }
     }
 
     @Override
@@ -85,15 +93,32 @@ public class IGoodsServiceImpl implements IGoodsService {
      * @param goodsItemId
      */
     private PurchaseInfoDTO upgradeOrRenewal(String userId,ShareServiceRecord serviceRecord, String goodsItemId) {
+        ShareUserAccount userAccount = accountManager.queryAccountByUserId(userId);
+        PurchaseInfoDTO purchaseInfoDTO = new PurchaseInfoDTO();
+        purchaseInfoDTO.setAvailableBalance(null != userAccount ? userAccount.getBalance() : new BigDecimal(0));
+        ShareGoodsItem thisGoods = goodsManager.queryByGoodsItemId(goodsItemId);
+        //续期
+        if (serviceRecord.getGoodsItemId().equals(goodsItemId)){
+            Date expiredTime = serviceRecord.getExpiredTime();
+            Long distanceTime = TimeUtil.getDistanceTime(expiredTime, DurationEnum.getDayByDuration(thisGoods.getDuration()));
+            purchaseInfoDTO.setRenewalTime(distanceTime);
+            purchaseInfoDTO.setPaymentAmount(thisGoods.getRawPrice());
+        }
+        //升级
+        else{
+            ShareGoodsItem existGoods = goodsManager.queryByGoodsItemId(serviceRecord.getGoodsItemId());
 
+        }
     }
 
     private PurchaseInfoDTO directPurchase(String userId, String goodsItemId) {
         ShareGoodsItem shareGoodsItem = goodsManager.queryByGoodsItemId(goodsItemId);
         PurchaseInfoDTO purchaseInfoDTO = new PurchaseInfoDTO();
         purchaseInfoDTO.setPaymentAmount(shareGoodsItem.getRawPrice());
-        Date assignTime = TimeUtil.getAssignTime(DurationEnum.getDayByDuration(shareGoodsItem.getDuration()));
-        purchaseInfoDTO.setRenewalTime(assignTime.getTime());
-        purchaseInfoDTO.setAvailableBalance();
+        long assignTime = TimeUtil.getAssignTime(DurationEnum.getDayByDuration(shareGoodsItem.getDuration()));
+        purchaseInfoDTO.setRenewalTime(assignTime);
+        ShareUserAccount userAccount = accountManager.queryAccountByUserId(userId);
+        purchaseInfoDTO.setAvailableBalance(null != userAccount ? userAccount.getBalance() : new BigDecimal(0));
+        return purchaseInfoDTO;
     }
 }
