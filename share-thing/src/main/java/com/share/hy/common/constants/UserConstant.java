@@ -7,12 +7,7 @@ import java.util.Random;
 public class UserConstant {
 
     private static String base16Letter = "00112233445566887799abc1230456987def0123456789";
-    private static final int LENGTH_USERID = 16;
-    public static final int INIT_INDEX = 1;
-    /**
-     * 多级位置后缀
-     */
-    public static final char USER_SUFFIX = '.';
+    private static final int LENGTH_USERID = 24;
 
     /**
      * 生成userId

@@ -10,8 +10,8 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-@Table(name = "share_user")
-public class ShareUser implements Serializable {
+@Table(name = "share_user_relation")
+public class ShareUserRelation implements Serializable {
     /**
      * 主键id
      */
@@ -20,22 +20,22 @@ public class ShareUser implements Serializable {
     private Integer id;
 
     /**
-     * 用户名（登录）
+     * 用户id
      */
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "user_id")
+    private String userId;
 
     /**
-     * 密码
+     * 第一上级
      */
-    @Column(name = "password")
-    private String password;
+    @Column(name = "first")
+    private String first;
 
     /**
-     * vip级别 0就是普通用户
+     * 第二上级
      */
-    @Column(name = "vip")
-    private Byte vip;
+    @Column(name = "second")
+    private String second;
 
     /**
      * 创建时间
@@ -49,23 +49,10 @@ public class ShareUser implements Serializable {
     @Column(name = "update_time")
     private Date updateTime;
 
-    /**
-     * 用户id
-     */
-    @Column(name = "user_id")
-    private String userId;
-
-    /**
-     * 0-禁用 1-正常
-     */
-    @Column(name = "state")
-    private Byte state;
-
-    /**
-     * 0-普通用户 1-管理员
-     */
-    @Column(name = "role")
-    private Byte role;
+    public ShareUserRelation(String userId, String first) {
+        this.userId = userId;
+        this.first = first;
+    }
 
     private static final long serialVersionUID = 1L;
 }

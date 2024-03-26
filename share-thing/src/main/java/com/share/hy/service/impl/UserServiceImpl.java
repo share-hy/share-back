@@ -54,19 +54,15 @@ public class UserServiceImpl implements IUserService {
         ShareUser shareUser = new ShareUser();
         shareUser.setPassword(Md5Util.MD5With32(userRegister.getPassword()));
         shareUser.setUserName(userRegister.getUserName());
-        String userId;
-        if (StringUtils.isNotBlank(userRegister.getInviteUserId())){
-            shareUser.setFrom(userRegister.getInviteUserId());
-            userId = userManager.getNextSubUserId(userRegister.getInviteUserId());
-        }
-        else{
-            userId = UserConstant.generateUserId();
-        }
+        String userId = UserConstant.generateUserId();
         String token = generateToken();
         setCookie(token, userId);
         userManager.saveToken(token,userId);
         shareUser.setUserId(userId);
         userManager.newAddUser(shareUser);
+        if (StringUtils.isNotBlank(userRegister.getInviteUserId())){
+            userManager.linkUser(userId,userRegister.getInviteUserId());
+        }
         return ErrorCodeEnum.SUCCESS;
     }
 
@@ -78,11 +74,11 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public String queryUserAccount(String userId) {
-        String account = userManager.queryAccountByUserId(userId);
-        if (null == account){
+        ShareUser shareUser = userManager.queryAccountByUserId(userId);
+        if (null == shareUser){
             throw new CustomBusinessException(ErrorCodeEnum.ERROR_ORDER_NOT_EXIST);
         }
-        return account;
+        return shareUser.getUserName();
     }
 
     private void setCookie(String token,String userId){

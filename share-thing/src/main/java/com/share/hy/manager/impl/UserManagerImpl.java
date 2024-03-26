@@ -1,11 +1,15 @@
 package com.share.hy.manager.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.share.hy.common.constants.RedisKeyConstant;
 import com.share.hy.common.constants.UserConstant;
 import com.share.hy.common.enums.RoleEnum;
 import com.share.hy.domain.ShareUser;
+import com.share.hy.domain.ShareUserRelation;
 import com.share.hy.manager.IUserManager;
 import com.share.hy.mapper.ShareUserMapper;
+import com.share.hy.mapper.ShareUserRelationMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public class UserManagerImpl implements IUserManager {
 
     private static final long TOKEN_EXPIRED_HOUR = 24;
@@ -24,6 +29,9 @@ public class UserManagerImpl implements IUserManager {
 
     @Autowired
     private ShareUserMapper shareUserMapper;
+
+    @Autowired
+    private ShareUserRelationMapper relationMapper;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -65,27 +73,27 @@ public class UserManagerImpl implements IUserManager {
     }
 
     @Override
-    public String queryAccountByUserId(String userId) {
+    public ShareUser queryAccountByUserId(String userId) {
         Example example = new Example(ShareUser.class);
         example.createCriteria().andEqualTo("userId",userId);
-        ShareUser shareUser = shareUserMapper.selectOneByExample(example);
-        return null != shareUser ? shareUser.getUserName() : null;
+        return shareUserMapper.selectOneByExample(example);
     }
 
     @Override
-    public String getNextSubUserId(String userId) {
-        Example example = new Example(ShareUser.class);
-        example.createCriteria().andLike("userId",userId + "%");
-        List<ShareUser> likeUsers = shareUserMapper.selectByExample(example);
-        int index = UserConstant.INIT_INDEX;
-        if (CollectionUtils.isEmpty(likeUsers)) {
-            return userId + index + UserConstant.USER_SUFFIX;
+    public void linkUser(String userId, String inviteUserId) {
+        ShareUserRelation shareUserRelation = new ShareUserRelation(userId,inviteUserId);
+        ShareUserRelation userRelation = queryRelationByUserId(inviteUserId);
+        if (null != userRelation){
+            shareUserRelation.setSecond(userRelation.getFirst());
         }
-        for (ShareUser shareUser : likeUsers) {
-            String thisIndex = shareUser.getUserId().substring(userId.length()).split("\\.")[0];
-            if (StringUtils.isNumeric(thisIndex)) {
-                return userId + Integer.max(index, Integer.parseInt(thisIndex)) + UserConstant.USER_SUFFIX;
-            }
-        }
+        relationMapper.insertSelective(shareUserRelation);
+        log.info("link user success:{}", JSONObject.toJSONString(shareUserRelation));
+    }
+
+    @Override
+    public ShareUserRelation queryRelationByUserId(String userId) {
+        Example example = new Example(ShareUserRelation.class);
+        example.createCriteria().andEqualTo("userId",userId);
+        return relationMapper.selectOneByExample(example);
     }
 }

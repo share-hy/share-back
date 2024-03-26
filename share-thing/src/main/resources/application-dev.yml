@@ -22,3 +22,4 @@ spring:
 logging:
   file:
     path: /var/logs
+

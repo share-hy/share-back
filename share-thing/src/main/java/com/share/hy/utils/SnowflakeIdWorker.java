@@ -127,16 +127,8 @@ public class SnowflakeIdWorker {
 
 
 	public static void main(String [] args){
-		for(int i=0; i < 100; i++) {
-			long id = SnowflakeIdWorker.nextId();
-			System.out.println(id);
-			System.out.println(Long.toBinaryString(id));
-		}
-
-		System.out.println(-1L ^ (-1L << WORKER_ID_BITS));
-		System.out.println(workerId);
-		System.out.println(-1L ^ (-1L << DATACENTER_ID_BITS));
-		System.out.println(datacenterId);
+		long id = SnowflakeIdWorker.nextId();
+		System.out.println(id);
 	}
 
 }

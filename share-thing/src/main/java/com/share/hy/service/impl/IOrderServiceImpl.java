@@ -320,7 +320,7 @@ public class IOrderServiceImpl implements IOrderService {
         Map<String, List<ShareUserTradeRecord>> orderTradeMaps = tradeRecords.stream().collect(Collectors.groupingBy(ShareUserTradeRecord::getOrderId));
         List<String> needUpdateOvertime = new LinkedList<>();
         List<OrderInfoDTO> data = shareOrders.stream()
-                .map(n -> new OrderInfoDTO(n, goodsItemMap.get(n.getGoodsItemId()),,orderTradeMaps.get(n.getOrderId())))
+                .map(n -> new OrderInfoDTO(n, goodsItemMap.get(n.getGoodsItemId()),orderTradeMaps.get(n.getOrderId())))
                 .collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(needUpdateOvertime)){
             orderManager.updateOvertimeBatch(needUpdateOvertime);

@@ -2,6 +2,7 @@ package com.share;
 
 import static org.junit.Assert.assertTrue;
 
+import com.share.hy.utils.SnowflakeIdWorker;
 import org.junit.Test;
 
 /**
@@ -15,6 +16,7 @@ public class AppTest
     @Test
     public void shouldAnswerWithTrue()
     {
-
+        long id = SnowflakeIdWorker.nextId();
+        System.out.println(id);
     }
 }
