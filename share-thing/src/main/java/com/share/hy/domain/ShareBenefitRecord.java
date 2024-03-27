@@ -1,6 +1,7 @@
 package com.share.hy.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 import lombok.*;
@@ -32,10 +33,16 @@ public class ShareBenefitRecord implements Serializable {
     private String toUser;
 
     /**
-     * 用户级别，仅2级与3级
+     * 用户级别，仅1级与2级
      */
     @Column(name = "level")
     private Byte level;
+
+    /**
+     * 收到的分润金额
+     */
+    @Column(name = "amount")
+    private BigDecimal amount;
 
     /**
      * 创建时间

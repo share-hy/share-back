@@ -7,6 +7,7 @@
     <result column="from_user" jdbcType="VARCHAR" property="fromUser" />
     <result column="to_user" jdbcType="VARCHAR" property="toUser" />
     <result column="level" jdbcType="TINYINT" property="level" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="order_id" jdbcType="VARCHAR" property="orderId" />
@@ -16,5 +17,10 @@
     <!-- WARNING - @mbg.generated -->
     id, from_user, to_user, level, create_time, update_time, order_id
   </sql>
-  
+    <select id="countBenefitGroupByLevel" resultType="java.util.Map">
+        select `level`,sum(share_benefit_record) as amount from share_benefit_record
+        where to_user = #{userId}
+        group by `level`
+    </select>
+
 </mapper>

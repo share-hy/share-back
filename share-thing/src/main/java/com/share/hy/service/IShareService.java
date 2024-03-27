@@ -2,8 +2,10 @@ package com.share.hy.service;
 
 import com.share.hy.common.ResponseMsg;
 import com.share.hy.dto.console.EarningsOverviewDTO;
+import com.share.hy.dto.console.ShareBenefitDTO;
 import com.share.hy.dto.console.SubordinateOverviewDTO;
 
+import java.util.List;
 import java.util.Map;
 
 public interface IShareService {
@@ -13,4 +15,6 @@ public interface IShareService {
     EarningsOverviewDTO earningsOverview(String userId);
 
     SubordinateOverviewDTO subordinateOverview(String userId);
+
+    List<ShareBenefitDTO> incomeDetail(String userId, Byte level,Integer pageSize,Integer pageNum);
 }

@@ -28,6 +28,14 @@ public class ShareController extends BaseController {
         HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
         return success(shareService.earningsOverview(httpCommonHeader.getUserId()));
     }
+    @GetMapping("/income/detail")
+    public ResponseMsg<?> incomeOverView(@RequestParam Byte level,
+                                         @RequestParam(defaultValue = "10") Integer pageSize,
+                                         @RequestParam(defaultValue = "1") Integer pageNum) {
+        HttpCommonHeader httpCommonHeader = getHttpCommonHeader();
+        return success(shareService.incomeDetail(httpCommonHeader.getUserId(),level,pageSize,pageNum));
+    }
+
 
     @GetMapping("/subordinate/overview")
     public ResponseMsg<?> subordinateOverView() {
