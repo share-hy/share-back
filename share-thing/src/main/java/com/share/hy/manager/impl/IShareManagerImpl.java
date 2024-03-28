@@ -2,7 +2,6 @@ package com.share.hy.manager.impl;
 
 import cn.hutool.core.map.MapUtil;
 import com.share.hy.domain.ShareBenefitRecord;
-import com.share.hy.manager.IShareBenefitManager;
 import com.share.hy.manager.IShareManager;
 import com.share.hy.mapper.ShareBenefitRecordMapper;
 import com.share.hy.mapper.ShareUserRelationMapper;
@@ -64,5 +63,13 @@ public class IShareManagerImpl implements IShareManager {
                 .andEqualTo("level",level);
         RowBounds rowBounds = new RowBounds((pageNum - 1) * pageSize, pageSize);
         return benefitRecordMapper.selectByExampleAndRowBounds(example,rowBounds);
+    }
+
+    @Override
+    public int countByUserIdAndLevel(String userId, Byte level) {
+        Example example = new Example(ShareBenefitRecord.class);
+        example.createCriteria().andEqualTo("userId",userId)
+                .andEqualTo("level",level);
+        return benefitRecordMapper.selectCountByExample(example);
     }
 }

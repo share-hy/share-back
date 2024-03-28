@@ -13,7 +13,7 @@ public interface IOrderService {
 
     int orderCompleted(String orderId, Date payTime);
 
-    List<OrderInfoDTO> queryOrder(OrderQueryDTO queryDTO);
+    List<OrderInfoDTO> queryOrder(String userId);
 
     void orderCompletedDirectly(ShareOrder toInsertOrder, boolean update);
 

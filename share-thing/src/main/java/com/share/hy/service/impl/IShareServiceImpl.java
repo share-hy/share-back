@@ -5,7 +5,6 @@ import com.share.hy.domain.ShareBenefitRecord;
 import com.share.hy.dto.console.EarningsOverviewDTO;
 import com.share.hy.dto.console.ShareBenefitDTO;
 import com.share.hy.dto.console.SubordinateOverviewDTO;
-import com.share.hy.manager.IShareBenefitManager;
 import com.share.hy.manager.IShareManager;
 import com.share.hy.service.IShareService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,7 +67,17 @@ public class IShareServiceImpl implements IShareService {
     }
 
     @Override
-    public List<ShareBenefitDTO> incomeDetail(String userId, Byte level,Integer pageSize,Integer pageNum) {
+    public Map<String,Object> incomeDetail(String userId, Byte level,Integer pageSize,Integer pageNum) {
+        int count = shareManager.countByUserIdAndLevel(userId, level);
+        Map<String, Object> result = new HashMap<>(2,1.01f);
+        if (count == 0){
+            result.put("count",0);
+            result.put("data",Collections.emptyList());
+            return result;
+        }
         List<ShareBenefitRecord> benefitRecords = shareManager.queryByLevelAndUserId(userId, level, pageSize, pageNum);
+        result.put("data",benefitRecords.stream().map(ShareBenefitDTO::new).collect(Collectors.toList()));
+        result.put("count",count);
+        return result;
     }
 }

@@ -2,8 +2,8 @@ package com.share.hy.service.pay.trade;
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
-import com.lumi.aiot.cloud.pay.config.WechatPayConfig;
-import com.lumi.aiot.cloud.pay.dto.payment.WechatPayOrderCreateDTO;
+import com.share.hy.config.WechatPayConfig;
+import com.share.hy.dto.pay.WechatPayOrderCreateDTO;
 import com.wechat.pay.java.service.payments.h5.H5Service;
 import com.wechat.pay.java.service.payments.h5.model.*;
 import com.wechat.pay.java.service.payments.model.Transaction;

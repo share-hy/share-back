@@ -1,5 +1,6 @@
 package com.share.hy.service;
 
+import com.share.hy.dto.console.ServiceChangeDTO;
 import com.share.hy.dto.goods.GoodsDTO;
 import com.share.hy.dto.goods.GoodsDetailDTO;
 
@@ -17,4 +18,6 @@ public interface IGoodsService {
      * @return
      */
     GoodsDetailDTO detail(String userId, String goodsItemId);
+
+    List<ServiceChangeDTO> queryService(String userId);
 }

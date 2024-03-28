@@ -42,6 +42,18 @@ public class ShareUserTradeRecord implements Serializable {
     private Byte type;
 
     /**
+     * 0-直接支付或收入 1-增加钱包余额或扣除
+     */
+    @Column(name = "from")
+    private Byte from;
+
+    /**
+     * 原因 0-消费 1-邀请收入 2-提现 3-充值
+     */
+    @Column(name = "cause")
+    private Byte cause;
+
+    /**
      * 发生时间
      */
     @Column(name = "create_time")

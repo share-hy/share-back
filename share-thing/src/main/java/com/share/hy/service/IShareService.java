@@ -16,5 +16,5 @@ public interface IShareService {
 
     SubordinateOverviewDTO subordinateOverview(String userId);
 
-    List<ShareBenefitDTO> incomeDetail(String userId, Byte level,Integer pageSize,Integer pageNum);
+    Map<String,Object> incomeDetail(String userId, Byte level,Integer pageSize,Integer pageNum);
 }

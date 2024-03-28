@@ -1,16 +1,14 @@
 package com.share.hy.service.pay.callback;
 
 import com.alibaba.fastjson.JSON;
-import com.lumi.aiot.cloud.pay.common.enums.CurrencyEnum;
-import com.lumi.aiot.cloud.pay.common.enums.PaymentPlatEnum;
-import com.lumi.aiot.cloud.pay.domain.ShareOrder;
-import com.lumi.aiot.cloud.pay.dto.order.ShareOrderCompletedParam;
-import com.lumi.aiot.cloud.pay.dto.order.PaymentPreCreateInfoDTO;
-import com.lumi.aiot.cloud.pay.dto.payment.AlipayEventMsg;
-import com.lumi.aiot.cloud.pay.dto.payment.AlipayPayload;
-import com.lumi.aiot.cloud.pay.dto.payment.PaymentRefundedParam;
-import com.lumi.aiot.cloud.pay.service.OrderService;
-import com.lumi.aiot.cloud.pay.service.PayCallbackService;
+import com.share.hy.common.enums.CurrencyEnum;
+import com.share.hy.common.enums.PaymentPlatEnum;
+import com.share.hy.domain.ShareOrder;
+import com.share.hy.dto.pay.AlipayEventMsg;
+import com.share.hy.dto.pay.AlipayPayload;
+import com.share.hy.dto.pay.PaymentOrderCompletedParam;
+import com.share.hy.dto.pay.PaymentPreCreateInfoDTO;
+import com.share.hy.service.IOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -28,13 +26,13 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-public class AlipayCloudCallbackImpl implements com.lumi.aiot.cloud.pay.service.trading.callback.alipay.AlipayCallback {
+public class AlipayCloudCallbackImpl implements AlipayCallback {
 
     private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DF_WITH_MICROSECOND = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Autowired
-    private OrderService orderService;
+    private IOrderService orderService;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -64,8 +62,8 @@ public class AlipayCloudCallbackImpl implements com.lumi.aiot.cloud.pay.service.
             return;
         }
 
-        ShareOrderCompletedParam param = new ShareOrderCompletedParam();
-        ShareOrderCompletedParam.OrderInfo orderInfo = new ShareOrderCompletedParam.OrderInfo();
+        PaymentOrderCompletedParam param = new PaymentOrderCompletedParam();
+        PaymentOrderCompletedParam.OrderInfo orderInfo = new PaymentOrderCompletedParam.OrderInfo();
         String payloadStr = paymentPreCreateInfo.getPayload();
         AlipayPayload payload = JSON.parseObject(payloadStr, AlipayPayload.class);
         String out_trade_no = payload.getOrder().getOut_trade_no();
@@ -93,31 +91,4 @@ public class AlipayCloudCallbackImpl implements com.lumi.aiot.cloud.pay.service.
         payCallbackService.orderCompletedWithoutOrder(param);
     }
 
-    @Override
-    public void onTradeRefund(AlipayEventMsg msg, ShareOrder order) {
-        this.onTradeRefund0(msg, order);
-    }
-
-    @Override
-    public void onTradeRefundFully(AlipayEventMsg msg, ShareOrder order) {
-        this.onTradeRefund0(msg, order);
-    }
-
-    private void onTradeRefund0(AlipayEventMsg msg, ShareOrder order) {
-        if (Objects.isNull(order)) {
-            log.warn("[Alipay] onOrderRefunded. Not found order. param:{}", JSON.toJSONString(msg));
-            return;
-        }
-        PaymentRefundedParam param = new PaymentRefundedParam();
-        param.setOrder(order);
-        param.setTradeId(msg.getTrade_no());
-        param.setTotal(msg.getRefund_fee().toPlainString());
-        //注意！！！支付宝回调退款的时间字符串是 yyyy-MM-dd HH:mm:ss.SSS
-        Date refundedTime = new Date(LocalDateTime.parse(msg.getGmt_refund(), DF_WITH_MICROSECOND).toEpochSecond(ZoneOffset.ofHours(8)) * 1000);
-        param.setRefundedTime(refundedTime.getTime());
-        param.setCurrency(CurrencyEnum.CNY.getCode());
-        param.setTradePlat(PaymentPlatEnum.ALI_PAY.getCode());
-        param.setRawMsg(msg);
-        orderService.orderRefunded(param);
-    }
 }

@@ -5,21 +5,29 @@ import com.share.hy.common.constants.CookieConstant;
 import com.share.hy.common.constants.UserConstant;
 import com.share.hy.common.enums.ErrorCodeEnum;
 import com.share.hy.domain.ShareUser;
+import com.share.hy.domain.ShareUserTradeRecord;
 import com.share.hy.dto.console.AccountInfo;
+import com.share.hy.dto.console.BalanceChangeDTO;
 import com.share.hy.dto.user.UserAuthDTO;
 import com.share.hy.dto.user.UserLoginDTO;
+import com.share.hy.manager.IAccountManager;
 import com.share.hy.manager.IUserManager;
+import com.share.hy.manager.IUserTradeRecordManager;
 import com.share.hy.service.IUserService;
 import com.share.hy.utils.Md5Util;
 import com.share.hy.utils.SpringRequestHolderUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,7 +37,7 @@ public class UserServiceImpl implements IUserService {
     private IUserManager userManager;
 
     @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private IUserTradeRecordManager userTradeRecordManager;
 
     @Override
     public UserAuthDTO userLogin(UserLoginDTO userLoginDTO) {
@@ -79,6 +87,15 @@ public class UserServiceImpl implements IUserService {
             throw new CustomBusinessException(ErrorCodeEnum.ERROR_ORDER_NOT_EXIST);
         }
         return shareUser.getUserName();
+    }
+
+    @Override
+    public List<BalanceChangeDTO> queryUserBalance(String userId) {
+        List<ShareUserTradeRecord> userTradeRecords = userTradeRecordManager.queryBalanceByUserId(userId);
+        if (CollectionUtils.isEmpty(userTradeRecords)){
+            return Collections.emptyList();
+        }
+        return userTradeRecords.stream().map(BalanceChangeDTO::new).collect(Collectors.toList());
     }
 
     private void setCookie(String token,String userId){

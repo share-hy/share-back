@@ -36,7 +36,6 @@ public class ShareController extends BaseController {
         return success(shareService.incomeDetail(httpCommonHeader.getUserId(),level,pageSize,pageNum));
     }
 
-
     @GetMapping("/subordinate/overview")
     public ResponseMsg<?> subordinateOverView() {
         HttpCommonHeader httpCommonHeader = getHttpCommonHeader();

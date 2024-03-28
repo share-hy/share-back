@@ -9,6 +9,7 @@ import com.share.hy.common.enums.ServiceStatusEnum;
 import com.share.hy.domain.ShareGoodsItem;
 import com.share.hy.domain.ShareServiceRecord;
 import com.share.hy.domain.ShareUserAccount;
+import com.share.hy.dto.console.ServiceChangeDTO;
 import com.share.hy.dto.goods.GoodsDTO;
 import com.share.hy.dto.goods.GoodsDetailDTO;
 import com.share.hy.dto.goods.PurchaseInfoDTO;
@@ -31,6 +32,8 @@ public class IGoodsServiceImpl implements IGoodsService {
     private GoodsManager goodsManager;
     @Autowired
     private IAccountManager accountManager;
+//    @Autowired
+//    private
 
     @Override
     public Map<String, List<GoodsDTO>> queryByUserId(String userId) {
@@ -97,6 +100,15 @@ public class IGoodsServiceImpl implements IGoodsService {
         goodsDetailDTO.setGoodsItemId(goodsItemId);
         goodsDetailDTO.setDurationDay(DurationEnum.getDayByDuration(shareGoodsItem.getDuration()));
         return goodsDetailDTO;
+    }
+
+    @Override
+    public List<ServiceChangeDTO> queryService(String userId) {
+        List<ShareServiceRecord> serviceRecords = goodsManager.queryServiceRecordByUserIdAndStatus(userId, null);
+        if (CollectionUtils.isEmpty(serviceRecords)){
+            return Collections.emptyList();
+        }
+        return serviceRecords.stream().map(n->new ServiceChangeDTO(n,goodsManager)).collect(Collectors.toList());
     }
 
     private String generateServiceName(String goodsName, Byte goodsStatus) {

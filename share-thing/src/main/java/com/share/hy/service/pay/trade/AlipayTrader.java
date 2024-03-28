@@ -282,11 +282,6 @@ public class AlipayTrader implements Trader {
         }
     }
 
-    @Override
-    public PaymentUniformCreateOrderResp createOrder(ShareOrder order) {
-        return null;
-    }
-
 
     @Override
     public String getPlatName() {

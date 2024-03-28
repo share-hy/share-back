@@ -13,4 +13,6 @@ public interface IShareManager {
     Map<Byte,Integer> countSubordinateGroupByLevel(String userId);
 
     List<ShareBenefitRecord> queryByLevelAndUserId(String userId, Byte level,Integer pageSize,Integer pageNum);
+
+    int countByUserIdAndLevel(String userId, Byte level);
 }

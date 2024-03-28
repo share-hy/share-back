@@ -5,9 +5,12 @@ import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AlipayUserAgreementQueryResponse;
 import com.share.hy.common.CustomBusinessException;
 import com.share.hy.common.enums.AlipayEnum;
+import com.share.hy.common.enums.ErrorCodeEnum;
+import com.share.hy.common.enums.OrderStatusEnum;
 import com.share.hy.common.enums.PaymentPlatEnum;
 import com.share.hy.domain.ShareOrder;
 import com.share.hy.dto.pay.*;
+import com.share.hy.manager.IOrderManager;
 import com.share.hy.service.pay.PaymentService;
 import com.share.hy.service.pay.callback.ResendMsgService;
 import com.share.hy.service.pay.trade.AlipayTrader;
@@ -30,7 +33,7 @@ public class AlipayService implements PaymentService {
     private CacheUtil cacheUtil;
 
     @Autowired
-    private OrderManager orderManager;
+    private IOrderManager orderManager;
 
     @Autowired
     private ResendMsgService resendMsgService;
@@ -39,22 +42,20 @@ public class AlipayService implements PaymentService {
     public String launchPay(LaunchPayDTO launchPayDTO) {
         AlipayOrderCreateDTO alipayOrderCreateDTO = new AlipayOrderCreateDTO();
         alipayOrderCreateDTO.setOrderId(launchPayDTO.getOutTradeNo());
-        alipayOrderCreateDTO.setTotalAmount(launchPayDTO.getRawPrice().toPlainString());
+        alipayOrderCreateDTO.setTotalAmount(launchPayDTO.getPrice().toPlainString());
         alipayOrderCreateDTO.setTitle(launchPayDTO.getOrderId() +"-"+ launchPayDTO.getTypeEnum().getType());
         AlipayAttachmentDTO passbackParam = new AlipayAttachmentDTO();
         passbackParam.setOrderId(launchPayDTO.getOrderId());
-        passbackParam.setUserId(launchPayDTO.getUserId());
-        passbackParam.setGoodsItemId(launchPayDTO.getGoodsItemId());
+        passbackParam.setUserId(launchPayDTO.getPayCreateDTO().getUserId());
+        passbackParam.setGoodsItemId(launchPayDTO.getPayCreateDTO().getGoodsItemId());
         passbackParam.setOrderType(launchPayDTO.getTypeEnum().getType());
         alipayOrderCreateDTO.setPassbackParam(passbackParam);
         alipayOrderCreateDTO.setOrderType(launchPayDTO.getTypeEnum());
         alipayOrderCreateDTO.setTimeExpire(launchPayDTO.getExpireTime());
         String url = "";
-        if(StringUtils.isEmpty(launchPayDTO.getPayMode()) || StringUtils.equals(launchPayDTO.getPayMode(), PayModeEnum.APP.getMode())){
+        if(StringUtils.isEmpty(launchPayDTO.getPayCreateDTO().getPayMode()) ||
+                StringUtils.equals(launchPayDTO.getPayCreateDTO().getPayMode(), "qrcode")){
             url = alipayTrader.createOrder(alipayOrderCreateDTO);
-        }else if(StringUtils.equals(launchPayDTO.getPayMode(), PayModeEnum.QRCODE.getMode())){
-            alipayOrderCreateDTO.setQrcodeWidth(launchPayDTO.getQrcodeWidth());
-            url = alipayTrader.createOrderPagePay(alipayOrderCreateDTO);
         }
         return url;
     }
@@ -78,14 +79,14 @@ public class AlipayService implements PaymentService {
             resp.setStatus(PaymentCheckDTO.Status.TRADE_SUCCESS.getCode());
             if (Objects.isNull(preCreateInfoCache)) {
                 ShareOrder ShareOrder = orderManager.selByOrderId(orderId);
-                if (Objects.nonNull(ShareOrder) && OrderStatusEnum.PAY_SUCCESSFULLY.getStatus().equals(ShareOrder.getStatus())) {
+                if (Objects.nonNull(ShareOrder) && (OrderStatusEnum.PAY_SUCCESSFULLY.getStatus() == (ShareOrder.getStatus()))) {
                     PaymentCheckDTO.OrderInfo orderInfo = new PaymentCheckDTO.OrderInfo();
                     orderInfo.setOrderId(ShareOrder.getOrderId());
                     orderInfo.setCreateTime(ShareOrder.getCreateTime().getTime());
                     resp.setOrderInfo(orderInfo);
                     return resp;
                 }
-                throw new CustomBusinessException(ErrorCodeUtils.CommonErrorCode.ERROR_SERVER_INTERNAL);
+                throw new CustomBusinessException(ErrorCodeEnum.ERROR_SERVER_ERROR);
             }
             //TODO 异步处理。
             resendMsgService.sendAlipayTradeSuccessMsg(queryId, preCreateInfoCache, transaction);
@@ -101,30 +102,20 @@ public class AlipayService implements PaymentService {
     @Override
     public boolean periodCheck(PaymentRegularCheckDTO paymentRegularCheckDTO, PaymentPreCreateInfoDTO preCreateInfoCache) {
         String queryId = paymentRegularCheckDTO.getQueryId();
-        //订阅订单。
-        if (paymentRegularCheckDTO.getIsSubscription() == 1) {
-            AlipayUserAgreementQueryResponse agreement = alipayTrader.getAgreementByExternalAgreementNo(queryId);
-            if (agreement.getCode().equals("10000") && agreement.getStatus().equals("NORMAL")) {
-//                resendMsgService.sendAlipaySignSuccessMsg(queryId, agreement);
-                return true;
-            }
-        }
         //普通订单
-        else {
-            AlipayTradeQueryResponse transaction = alipayTrader.getTransaction(queryId);
-            log.info("transaction is :{}", transaction);
-            if (Objects.isNull(transaction)) {
-                return false;
-            }
-            if (AlipayEnum.TradeStatus.TRADE_CLOSED.name().equals(transaction.getTradeStatus())) {
-                log.info("order is closed. param:{}", JSON.toJSONString(paymentRegularCheckDTO));
-                return true;
-            }
-            if (transaction.getCode().equals("10000") && AlipayEnum.TradeStatus.TRADE_SUCCESS.name().equals(transaction.getTradeStatus())
-                    || AlipayEnum.TradeStatus.TRADE_FINISHED.name().equals(transaction.getTradeStatus())) {
-                resendMsgService.sendAlipayTradeSuccessMsg(queryId, preCreateInfoCache, transaction);
-                return true;
-            }
+        AlipayTradeQueryResponse transaction = alipayTrader.getTransaction(queryId);
+        log.info("transaction is :{}", transaction);
+        if (Objects.isNull(transaction)) {
+            return false;
+        }
+        if (AlipayEnum.TradeStatus.TRADE_CLOSED.name().equals(transaction.getTradeStatus())) {
+            log.info("order is closed. param:{}", JSON.toJSONString(paymentRegularCheckDTO));
+            return true;
+        }
+        if (transaction.getCode().equals("10000") && AlipayEnum.TradeStatus.TRADE_SUCCESS.name().equals(transaction.getTradeStatus())
+                || AlipayEnum.TradeStatus.TRADE_FINISHED.name().equals(transaction.getTradeStatus())) {
+            resendMsgService.sendAlipayTradeSuccessMsg(queryId, preCreateInfoCache, transaction);
+            return true;
         }
         return false;
     }

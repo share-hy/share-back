@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.lumi.aiot.cloud.pay.common.enums.CurrencyEnum;
 import com.lumi.aiot.cloud.pay.common.enums.PaymentPlatEnum;
 import com.lumi.aiot.cloud.pay.domain.ShareOrder;
-import com.lumi.aiot.cloud.pay.dto.order.ShareOrderCompletedParam;
+import com.lumi.aiot.cloud.pay.dto.order.PaymentOrderCompletedParam;
 import com.lumi.aiot.cloud.pay.dto.order.PaymentPreCreateInfoDTO;
 import com.lumi.aiot.cloud.pay.dto.payment.PaymentRefundedParam;
 import com.lumi.aiot.cloud.pay.dto.payment.WechatPayRefundEventMsg;
@@ -45,8 +45,8 @@ public class WechatPayCallbackImpl implements com.lumi.aiot.cloud.pay.service.tr
         }
 
         log.info("start generate deal wechatPay data:{},order create data:{}",msg, JSONObject.toJSONString(paymentPreCreateInfo));
-        ShareOrderCompletedParam param = new ShareOrderCompletedParam();
-        ShareOrderCompletedParam.OrderInfo orderInfo = new ShareOrderCompletedParam.OrderInfo();
+        PaymentOrderCompletedParam param = new PaymentOrderCompletedParam();
+        PaymentOrderCompletedParam.OrderInfo orderInfo = new PaymentOrderCompletedParam.OrderInfo();
         //String payloadStr = paymentPrecreateInfo.getPayload();
         //AlipayPayload payload = JSON.parseObject(payloadStr, AlipayPayload.class);
         //out_trade_no为orderId +"-"+ launchTimes

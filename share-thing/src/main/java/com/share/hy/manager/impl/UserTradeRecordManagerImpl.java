@@ -1,13 +1,12 @@
 package com.share.hy.manager.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.share.hy.common.enums.TradeTypeEnum;
 import com.share.hy.domain.ShareUserTradeRecord;
-import com.share.hy.manager.IOrderTradeRecordManager;
+import com.share.hy.manager.IUserTradeRecordManager;
 import com.share.hy.mapper.ShareUserTradeRecordMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.skywalking.apm.toolkit.trace.RunnableWrapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.entity.Example;
@@ -19,7 +18,7 @@ import java.util.Objects;
 
 @Slf4j
 @Component
-public class OrderTradeRecordManagerImpl implements IOrderTradeRecordManager {
+public class UserTradeRecordManagerImpl implements IUserTradeRecordManager {
 
 
     @Autowired
@@ -42,6 +41,17 @@ public class OrderTradeRecordManagerImpl implements IOrderTradeRecordManager {
         }
         Example example = new Example(ShareUserTradeRecord.class);
         example.createCriteria().andIn("orderId",orderIds);
+        return orderTradeRecordMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<ShareUserTradeRecord> queryBalanceByUserId(String userId) {
+        if (StringUtils.isBlank(userId)){
+            return Collections.emptyList();
+        }
+        Example example = new Example(ShareUserTradeRecord.class);
+        example.createCriteria().andEqualTo("userId",userId)
+                .andEqualTo("from",1);
         return orderTradeRecordMapper.selectByExample(example);
     }
 }
